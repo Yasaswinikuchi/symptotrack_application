@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Timeline - SymptoTrack Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body{font-family:'Plus Jakarta Sans',sans-serif;background:#0B0F17;color:#F3F4F6;margin:0;}
+        .wrapper{max-width:960px;margin:0 auto;padding:28px 16px;}
+        .hero{margin-bottom:20px;}
+        .hero h1{font-size:28px;font-weight:800;margin:0 0 6px;}
+        .hero p{color:#9CA3AF;margin:0;}
+        .stats{display:flex;gap:14px;margin-bottom:20px;}
+        .stat{background:rgba(17,24,39,0.75);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;text-align:center;flex:1;}
+        .stat-num{font-size:24px;font-weight:800;}
+        .stat-label{font-size:12px;color:#9CA3AF;margin-top:4px;}
+        .filter-bar{display:flex;gap:12px;margin-bottom:24px;}
+        .filter-bar button{padding:8px 14px;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);color:#F3F4F6;border-radius:12px;cursor:pointer;transition:all .2s;font-size:13px;}
+        .filter-bar button.active{background:#2563EB;border-color:#3B82F6;}
+        #chartContainer{background:rgba(17,24,39,0.75);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;}
+        .timeline-list{margin-top:24px;}
+        .event-card{background:rgba(17,24,39,0.75);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px;margin-bottom:12px;}
+        .event-header{display:flex;justify-content:space-between;align-items:center;}
+        .event-date{font-size:13px;color:#9CA3AF;}
+        .event-condition{font-size:16px;font-weight:700;}
+        .badge{display:inline-block;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-top:6px;}
+        .badge.low{background:#10B98122;color:#10B981;}
+        .badge.medium{background:#F59E0B22;color:#F59E0B;}
+        .badge.high{background:#EF444422;color:#EF4444;}
+        .event-actions{margin-top:10px;display:flex;gap:8px;}
+        .btn-view{flex:1;padding:8px;background:#3B82F6;color:#fff;border:none;border-radius:10px;cursor:pointer;}
+        .btn-add{position:fixed;bottom:28px;right:28px;width:58px;height:58px;background:linear-gradient(135deg,#2563EB,#7C3AED);border:none;border-radius:50%;color:#fff;font-size:32px;cursor:pointer;box-shadow:0 8px 24px rgba(37,99,235,0.4);transition:transform .2s;z-index:100;}
+        .btn-add:hover{transform:scale(1.1) rotate(45deg);}        
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:999;}
+        .modal.open{display:flex;}
+        .modal-box{background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;width:90%;max-width:460px;max-height:90vh;overflow-y:auto;}
+        .field{margin-bottom:14px;}
+        .field label{display:block;font-size:13px;color:#9CA3AF;margin-bottom:4px;font-weight:600;}
+        .field input,.field select,.field textarea{width:100%;background:rgba(30,41,59,0.8);border:1px solid rgba(255,255,255,0.1);color:#F3F4F6;padding:10px 12px;border-radius:10px;font-size:14px;box-sizing:border-box;outline:none;}
+        .field input:focus,.field select:focus,.field textarea:focus{border-color:#3B82F6;}
+        .actions{display:flex;gap:10px;margin-top:20px;}
+        .btn-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9CA3AF;border-radius:12px;font-weight:600;cursor:pointer;}
+        .btn-save{flex:2;padding:11px;background:linear-gradient(135deg,#2563EB,#7C3AED);border:none;color:#fff;border-radius:12px;font-weight:700;cursor:pointer;}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav class="top-nav" style="background:rgba(15,23,42,0.9);border-bottom:1px solid rgba(255,255,255,0.08);">
+    <a href="dashboard.html" class="nav-brand" style="color:#FFF;">
+        <svg viewBox="0 0 40 40" fill="none" style="width:30px;height:30px;"><path d="M16 4H24V16H36V24H24V36H16V24H4V16H16V4Z" fill="#3B82F6"/><path d="M10 24L18 16L24 22L32 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        SymptoTrack <span style="font-size:11px;background:#3B82F6;color:#fff;padding:2px 8px;border-radius:20px;margin-left:6px;">PRO</span>
+    </a>
+    <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="symptoms.html">Symptoms</a>
+        <a href="chatbot.html">AI Chat</a>
+        <a href="voice.html">Voice</a>
+        <a href="scan.html">Scan</a>
+        <a href="nearby.html">Nearby</a>
+        <a href="history.html">Records</a>
+        <a href="reminders.html">Reminders</a>
+        <a href="family.html">Family</a>
+        <a href="reports.html">Reports</a>
+        <a href="heatmap.html">Heatmap</a>
+        <a href="timeline.html" class="active">Timeline</a>
+        <a href="alerts.html">Alerts</a>
+        <a href="profile.html">Profile</a>
+    </div>
+</nav>
+
+<div class="wrapper">
+    <div class="hero">
+        <h1>📊 Symptom Timeline</h1>
+        <p>Track symptom severity over time and view detailed event logs.</p>
+    </div>
+    <div class="stats">
+        <div class="stat"><div class="stat-num" id="totalDiagnoses">0</div><div class="stat-label">Diagnoses</div></div>
+        <div class="stat"><div class="stat-num" id="mostCommon">—</div><div class="stat-label">Most Common</div></div>
+        <div class="stat"><div class="stat-num" id="avgScore">0</div><div class="stat-label">Avg Health Score</div></div>
+        <div class="stat"><div class="stat-num" id="daysTracked">0</div><div class="stat-label">Days Tracked</div></div>
+    </div>
+    <div class="filter-bar" id="filterBar">
+        <button data-range="7" class="active">Last 7 days</button>
+        <button data-range="30">Last 30 days</button>
+        <button data-range="90">Last 3 months</button>
+        <button data-range="all">All time</button>
+    </div>
+    <div id="chartContainer"><canvas id="timelineChart" height="200"></canvas></div>
+    <div class="timeline-list" id="eventList"></div>
+</div>
+
+<button class="btn-add" id="btnAddEvent">+</button>
+
+<!-- Add Event Modal -->
+<div class="modal" id="eventModal">
+    <div class="modal-box">
+        <h2>➕ Add Symptom Event</h2>
+        <div class="field"><label>Date *</label><input type="date" id="eventDate"></div>
+        <div class="field"><label>Condition *</label><input type="text" id="eventCondition" placeholder="e.g. Fever"></div>
+        <div class="field"><label>Severity (1‑10)</label><input type="range" id="eventSeverity" min="1" max="10" value="5"></div>
+        <div class="field"><label>Notes</label><textarea id="eventNotes" rows="2"></textarea></div>
+        <div class="actions"><button class="btn-cancel" id="btnCancelEvent">Cancel</button><button class="btn-save" id="btnSaveEvent">Save</button></div>
+    </div>
+</div>
+
+<script src="timeline.js"></script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>

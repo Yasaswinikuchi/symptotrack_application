@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Medicine Reminders - SymptoTrack Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 24px;
+            margin-top: 8px;
+        }
+        .btn-back-link {
+            position: absolute;
+            left: 0;
+            color: #FFFFFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: rgba(19,28,49,0.85); backdrop-filter:blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px; text-align: center; }
+        .stat-num { font-size: 22px; font-weight: 800; }
+        .stat-lbl { font-size: 11px; color: #94A3B8; margin-top: 4px; font-weight:600; }
+
+        /* ── Empty State View ── */
+        .empty-state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 10px;
+            margin-top: 20px;
+        }
+
+        .icon-circle-bg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .icon-circle-bg svg {
+            width: 40px;
+            height: 40px;
+            color: #2563EB;
+        }
+
+        .empty-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .empty-subtitle {
+            font-size: 13px;
+            color: #94A3B8;
+            line-height: 1.5;
+            max-width: 320px;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .btn-book-new {
+            width: 100%;
+            max-width: 340px;
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 16px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-book-new:hover {
+            background: #1D4ED8;
+            transform: translateY(-2px);
+        }
+
+        .reminders-grid { display: flex; flex-direction: column; gap: 14px; }
+        .reminder-card { background: rgba(19,28,49,0.85); backdrop-filter:blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 18px; }
+        .fab { position: fixed; bottom: 84px; right: 24px; width: 56px; height: 56px; background: #2563EB; border: none; border-radius: 50%; color: #fff; font-size: 28px; cursor: pointer; box-shadow: 0 8px 24px rgba(37,99,235,0.4); display:flex; align-items:center; justify-content:center; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 999; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: #0F172A; border: 1px solid rgba(255,255,255,0.12); border-radius: 24px; padding: 24px; width: 90%; max-width: 420px; color: #FFF; }
+        .form-field { margin-bottom: 14px; }
+        .form-field label { display: block; font-size: 12px; color: #94A3B8; margin-bottom: 4px; font-weight: 700; }
+        .form-field input, .form-field select, .form-field textarea { width: 100%; background: #1E293B; border: 1px solid rgba(255,255,255,0.15); color: #FFF; padding: 12px; border-radius: 12px; font-size: 14px; outline: none; }
+        .btn-time-preset {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #38BDF8;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn-time-preset:hover {
+            background: rgba(59, 130, 246, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- App Header -->
+        <header class="app-header">
+            <a href="dashboard.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <div class="header-title">Medicine Reminders</div>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-num" id="statTotal" style="color:#38BDF8;">0</div><div class="stat-lbl">Reminders</div></div>
+            <div class="stat-card"><div class="stat-num" id="statDue" style="color:#F59E0B;">0</div><div class="stat-lbl">Due Today</div></div>
+            <div class="stat-card"><div class="stat-num" id="statTaken" style="color:#4ADE80;">0</div><div class="stat-lbl">Taken Today</div></div>
+        </div>
+
+        <div class="reminders-grid" id="remindersGrid">
+            <!-- Dynamic Reminders or Mobile App Empty State -->
+        </div>
+
+    </div>
+
+    <button class="fab" id="fabAdd" title="Add Reminder">+</button>
+
+    <!-- Add Reminder Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+            <h3 style="font-size:18px; font-weight:800; margin-bottom:16px;">Add Medication Reminder</h3>
+            <div class="form-field">
+                <label>Medication Name *</label>
+                <input type="text" id="remName" placeholder="e.g. Paracetamol 500mg">
+            </div>
+            <div class="form-field">
+                <label>Dosage</label>
+                <input type="text" id="remDose" placeholder="e.g. 1 tablet, 5ml">
+            </div>
+            <div class="form-field">
+                <label>Medication Type</label>
+                <select id="remType">
+                    <option value="tablet">💊 Tablet</option>
+                    <option value="capsule">🔵 Capsule</option>
+                    <option value="syrup">🧴 Syrup</option>
+                    <option value="injection">💉 Injection</option>
+                    <option value="drops">👁️ Drops</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Frequency</label>
+                <select id="remFreq">
+                    <option value="Daily">Once Daily</option>
+                    <option value="Twice Daily">Twice Daily</option>
+                    <option value="Weekly">Weekly</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Reminder Time *</label>
+                <input type="time" id="remTime" style="color-scheme: dark; width: 100%; background: #1E293B; color: #FFF; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); font-size: 15px; font-weight: 700;">
+                
+                <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-time-preset" onclick="setPresetTime('08:00')">🌅 8:00 AM</button>
+                    <button type="button" class="btn-time-preset" onclick="setPresetTime('14:00')">☀️ 2:00 PM</button>
+                    <button type="button" class="btn-time-preset" onclick="setPresetTime('20:00')">🌙 8:00 PM</button>
+                </div>
+            </div>
+            <div class="form-field">
+                <label>Notes</label>
+                <textarea id="remNotes" rows="2" placeholder="Take after food..."></textarea>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-cancel" id="btnCancelAdd" onclick="document.getElementById('addModal').classList.remove('open')" style="flex:1; padding:12px; background:rgba(255,255,255,0.08); border:none; color:#94A3B8; border-radius:12px; font-weight:800; cursor:pointer;">Cancel</button>
+                <button class="btn-save" id="btnSaveAdd" style="flex:2; padding:12px; background:#2563EB; border:none; color:#FFF; border-radius:12px; font-weight:800; cursor:pointer;">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="reminders.js"></script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>

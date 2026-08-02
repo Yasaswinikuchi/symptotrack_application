@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>AI Health Chatbot - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="auth-guard.js"></script>
+    <style>
+        /* RESET – don't let any external sheet interfere */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { height: 100%; }
+
+        body {
+            height: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B0F17;
+            color: #F3F4F6;
+            overflow: hidden;
+        }
+
+        /* ──────────────────── NAV ──────────────────── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 52px;
+            background: #0B132B;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            z-index: 1000;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 16px; font-weight: 800; color: #fff;
+            text-decoration: none;
+        }
+
+
+        /* ──────────────────── LAYOUT ──────────────────── */
+        .chat-wrap {
+            position: fixed;
+            top: 52px; bottom: 0; left: 0; right: 0;
+            display: flex;
+            flex-direction: column;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* ──────────────────── HEADER ──────────────────── */
+        .chat-hdr {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: rgba(15,23,42,0.9);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+        .bot-info { display: flex; align-items: center; gap: 10px; }
+        .bot-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg,#2563EB,#7C3AED);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; flex-shrink: 0;
+        }
+        .online-dot {
+            position: absolute; bottom: 1px; right: 1px;
+            width: 9px; height: 9px;
+            background: #10B981; border-radius: 50%;
+            border: 2px solid #0B0F17;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+        .bot-name { font-size: 15px; font-weight: 800; color: #fff; }
+        .bot-status { font-size: 11px; color: #10B981; font-weight: 600; }
+        .btn-clr {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #9CA3AF;
+            padding: 5px 11px; border-radius: 8px;
+            font-size: 11px; font-weight: 600;
+            cursor: pointer; font-family: inherit;
+        }
+        .btn-clr:hover { background: rgba(239,68,68,.15); color: #EF4444; border-color:#EF4444; }
+
+        /* ──────────────────── MESSAGES ──────────────────── */
+        .msgs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 14px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .msgs::-webkit-scrollbar { width: 3px; }
+        .msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+        /* Message rows */
+        .row { display: flex; align-items: flex-end; gap: 7px; }
+        .row.user { flex-direction: row-reverse; }
+
+        /* AVATAR ICON */
+        .m-av {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg,#2563EB,#7C3AED);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* BUBBLES – hard-coded with no inheritance */
+        .bubble {
+            max-width: 78%;
+            padding: 11px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.65;
+            word-break: break-word;
+        }
+        /* AI bubble – DARK NAVY */
+        .bubble.ai {
+            background-color: #1a2540 !important;
+            border: 1px solid rgba(255,255,255,0.12) !important;
+            color: #E5E7EB !important;
+            border-bottom-left-radius: 3px !important;
+        }
+        /* User bubble – BLUE GRADIENT */
+        .bubble.user {
+            background: linear-gradient(135deg, #2563EB, #7C3AED) !important;
+            color: #ffffff !important;
+            border-bottom-right-radius: 3px !important;
+        }
+        .bubble strong { font-weight: 700; }
+
+        .ts {
+            font-size: 10px;
+            color: rgba(156,163,175,0.8);
+            margin-top: 3px;
+            padding: 0 3px;
+        }
+        .row.user .ts { text-align: right; }
+
+        /* Typing dots */
+        .typing {
+            display: inline-flex; gap: 5px; align-items: center;
+            padding: 12px 14px;
+            background-color: #1a2540 !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            border-radius: 18px; border-bottom-left-radius: 3px;
+        }
+        .dot {
+            width: 7px; height: 7px;
+            background: #6B7280; border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: .2s; }
+        .dot:nth-child(3) { animation-delay: .4s; }
+        @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px);background:#3B82F6} }
+
+        /* ──────────────────── QUICK CHIPS ──────────────────── */
+        .chips {
+            display: flex; gap: 7px;
+            padding: 8px 14px;
+            overflow-x: auto; scrollbar-width: none;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .chips::-webkit-scrollbar { display: none; }
+        .chip {
+            background: rgba(30,41,59,.95);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #D1D5DB;
+            padding: 6px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            font-family: inherit; transition: all .2s;
+        }
+        .chip:hover, .chip:active { background: rgba(37,99,235,.35); border-color:#3B82F6; color:#fff; }
+
+        /* ──────────────────── INPUT ROW ──────────────────── */
+        .input-row {
+            display: flex; gap: 8px; align-items: flex-end;
+            padding: 10px 14px;
+            padding-bottom: max(14px, env(safe-area-inset-bottom));
+            background: #0B0F17;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            flex-shrink: 0;
+        }
+        /* WHITE INPUT – easy to read */
+        textarea#inp {
+            flex: 1;
+            background: #ffffff !important;
+            border: 2px solid #3B82F6 !important;
+            color: #111111 !important;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 14px; font-weight: 600;
+            font-family: inherit;
+            outline: none; resize: none;
+            min-height: 44px; max-height: 110px;
+            line-height: 1.5;
+            caret-color: #2563EB;
+        }
+        textarea#inp::placeholder { color: #999 !important; font-weight: 400; }
+        textarea#inp:focus { border-color: #1d4ed8 !important; box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
+        button#send {
+            width: 44px; height: 44px; flex-shrink: 0;
+            background: linear-gradient(135deg,#2563EB,#7C3AED);
+            border: none; border-radius: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform .15s;
+        }
+        button#send:hover { transform: scale(1.07); }
+        button#send:active { transform: scale(.95); }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a class="nav-logo" href="dashboard.html">
+        <svg viewBox="0 0 40 40" fill="none" style="width:26px;height:26px;">
+            <path d="M16 4H24V16H36V24H24V36H16V24H4V16H16V4Z" fill="#3B82F6"/>
+            <path d="M10 24L18 16L24 22L32 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        SymptoTrack PRO
+    </a>
+</nav>
+
+<div class="chat-wrap">
+    <!-- Header -->
+    <div class="chat-hdr">
+        <div class="bot-info">
+            <div class="bot-avatar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M12 8V4H8"/><rect x="8" y="2" width="4" height="4" rx="1"/>
+                    <path d="M4 12a8 8 0 0 1 16 0v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"/>
+                    <circle cx="9" cy="14" r="1" fill="white"/>
+                    <circle cx="15" cy="14" r="1" fill="white"/>
+                </svg>
+                <div class="online-dot"></div>
+            </div>
+            <div>
+                <div class="bot-name">Dr. SymptoBot</div>
+                <div class="bot-status">● AI Health Assistant • Online</div>
+            </div>
+        </div>
+        <button class="btn-clr" id="btnClear">🗑 Clear</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="msgs" id="msgs"></div>
+
+    <!-- Quick chips -->
+    <div class="chips">
+        <button class="chip" onclick="sendMsg('I have fever and headache')">🤒 Fever</button>
+        <button class="chip" onclick="sendMsg('I have chest pain')">⚠️ Chest Pain</button>
+        <button class="chip" onclick="sendMsg('What medicine for cough?')">💊 Medicines</button>
+        <button class="chip" onclick="sendMsg('Find me a doctor nearby')">🏥 Find Doctor</button>
+        <button class="chip" onclick="sendMsg('Give me sleep improvement tips')">😴 Sleep Tips</button>
+        <button class="chip" onclick="sendMsg('What are signs of diabetes?')">🩸 Diabetes</button>
+    </div>
+
+    <!-- Input -->
+    <div class="input-row">
+        <textarea id="inp" rows="1" placeholder="Type your health question here…"></textarea>
+        <button id="send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+(function(){
+    'use strict';
+    var KEY = 'symptotrack_chat_v2';
+    var msgsEl = document.getElementById('msgs');
+    var inp    = document.getElementById('inp');
+    var btnSnd = document.getElementById('send');
+    var btnClr = document.getElementById('btnClear');
+
+    // ── AI rules ──────────────────────────────────────────────────────────
+    var RULES = [
+        { k:['chest pain','heart','cardiac','palpitation'], r:'🚨 URGENT: Chest pain can be life-threatening. Call 108 or 911 immediately if the pain is severe, spreads to arm or jaw, or comes with sweating. Do not wait.' },
+        { k:['fever','temperature','hot','chills'], r:'🌡️ For fever:\n• Rest and drink 2–3 litres of water daily\n• Paracetamol 500 mg every 6 hrs helps reduce temperature\n• See a doctor if fever is above 39°C or lasts more than 3 days' },
+        { k:['headache','migraine','head pain'], r:'🧠 For headaches:\n• Rest in a quiet, dark room\n• Drink water and take Ibuprofen or Paracetamol\n• If the headache is sudden and very severe, seek emergency care immediately' },
+        { k:['cough','throat','cold','congestion','sore'], r:'😮 For cough and cold:\n• Drink warm water with honey and ginger\n• Antihistamines help with congestion\n• See a doctor if symptoms last more than 10 days or breathing is difficult' },
+        { k:['stomach','nausea','vomit','diarrhea','abdomen'], r:'🤢 For stomach issues:\n• Fast for 2–4 hours, then eat bland foods\n• ORS sachets prevent dehydration\n• Consult a doctor if symptoms last more than 48 hours' },
+        { k:['diabetes','blood sugar','glucose','insulin'], r:'🩸 Diabetes management:\n• Monitor blood glucose regularly\n• Keep diet low in refined sugars\n• Exercise 30 min daily\n• Signs of low blood sugar: shakiness, sweating — eat glucose immediately' },
+        { k:['blood pressure','hypertension','bp'], r:'💉 For high blood pressure:\n• Reduce salt intake\n• Exercise 30 min/day\n• Take prescribed medications regularly\n• Monitor BP at home' },
+        { k:['sleep','insomnia','tired','fatigue'], r:'😴 Sleep tips:\n• Keep a consistent sleep schedule\n• Avoid screens 1 hour before bed\n• Keep room dark and cool (18–20°C)\n• Melatonin 0.5–3 mg can help' },
+        { k:['rash','skin','itch','allergy'], r:'🔴 For skin rashes:\n• Avoid scratching\n• Apply cold compress\n• Antihistamines help with allergic rashes\n• See a dermatologist for persistent rashes' },
+        { k:['anxiety','stress','mental','depression','panic'], r:'🧘 Mental health matters:\n• Try deep breathing (4-7-8 technique)\n• Exercise and mindfulness help\n• If impacting daily life, please speak to a mental health professional' },
+        { k:['doctor','hospital','clinic','appointment'], r:'🏥 Use the Nearby Clinics tab to find hospitals near you, filter by specialty, and get directions.' },
+        { k:['medicine','drug','medication','dose','tablet'], r:'💊 Always follow your doctor\'s prescription. Never self-medicate with antibiotics. Ask me about a specific medication and I\'ll give you general guidance.' },
+    ];
+
+    function matchRule(text) {
+        var lower = text.toLowerCase();
+        for (var i = 0; i < RULES.length; i++) {
+            for (var j = 0; j < RULES[i].k.length; j++) {
+                if (lower.indexOf(RULES[i].k[j]) !== -1) return RULES[i].r;
+            }
+        }
+        return null;
+    }
+
+    // ── Storage ───────────────────────────────────────────────────────────
+    function loadHistory() {
+        try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e) { return []; }
+    }
+    function saveHistory(h) {
+        try { localStorage.setItem(KEY, JSON.stringify(h.slice(-60))); } catch(e) {}
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────
+    function fmtTime(iso) {
+        try {
+            var d = new Date(iso);
+            var h = d.getHours().toString().padStart(2,'0');
+            var m = d.getMinutes().toString().padStart(2,'0');
+            return h + ':' + m;
+        } catch(e) { return ''; }
+    }
+
+    function toHtml(text) {
+        // Escape dangerous HTML, then allow our formatting
+        var s = text
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;');
+        // Bold
+        s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Line breaks
+        s = s.replace(/\n/g, '<br>');
+        return s;
+    }
+
+    function appendMsg(msg) {
+        var row = document.createElement('div');
+        row.className = 'row ' + msg.role;
+
+        var timeStr = fmtTime(msg.time || new Date().toISOString());
+        var html = toHtml(msg.content);
+
+        if (msg.role === 'ai') {
+            row.innerHTML =
+                '<div class="m-av">' +
+                  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">' +
+                    '<circle cx="9" cy="12" r="1.5" fill="white"/>' +
+                    '<circle cx="15" cy="12" r="1.5" fill="white"/>' +
+                    '<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z" stroke-width="2"/>' +
+                  '</svg>' +
+                '</div>' +
+                '<div>' +
+                  '<div class="bubble ai">' + html + '</div>' +
+                  '<div class="ts">' + timeStr + '</div>' +
+                '</div>';
+        } else {
+            row.innerHTML =
+                '<div>' +
+                  '<div class="bubble user">' + html + '</div>' +
+                  '<div class="ts">' + timeStr + '</div>' +
+                '</div>';
+        }
+
+        msgsEl.appendChild(row);
+        // Scroll to bottom
+        setTimeout(function(){ msgsEl.scrollTop = msgsEl.scrollHeight; }, 50);
+    }
+
+    function showTyping() {
+        var row = document.createElement('div');
+        row.className = 'row ai'; row.id = 'typing';
+        row.innerHTML =
+            '<div class="m-av">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">' +
+                '<circle cx="9" cy="12" r="1.5" fill="white"/>' +
+                '<circle cx="15" cy="12" r="1.5" fill="white"/>' +
+                '<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z" stroke-width="2"/>' +
+              '</svg>' +
+            '</div>' +
+            '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+        msgsEl.appendChild(row);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+    }
+    function hideTyping() { var t = document.getElementById('typing'); if(t) t.remove(); }
+
+    // ── Init ──────────────────────────────────────────────────────────────
+    var history = loadHistory();
+    if (history.length === 0) {
+        var welcome = {
+            role: 'ai',
+            content: '👋 Hello! I am **Dr. SymptoBot**, your personal AI health assistant.\n\nI can help you with:\n• Symptom analysis & advice\n• Medication information\n• Finding nearby clinics\n• General health & wellness\n\nHow are you feeling today?',
+            time: new Date().toISOString()
+        };
+        history.push(welcome);
+        saveHistory(history);
+    }
+    history.forEach(function(m){ appendMsg(m); });
+
+    // ── Send ──────────────────────────────────────────────────────────────
+    function sendMsg(text) {
+        text = (text || '').trim();
+        if (!text) return;
+
+        var userMsg = { role:'user', content:text, time:new Date().toISOString() };
+        history.push(userMsg);
+        appendMsg(userMsg);
+        inp.value = ''; inp.style.height = 'auto';
+
+        showTyping();
+
+        // Try backend, fallback to rules
+        var timeoutId;
+        var done = false;
+
+        function finish(aiText) {
+            if (done) return; done = true;
+            clearTimeout(timeoutId);
+            // Simulate thinking delay
+            setTimeout(function(){
+                hideTyping();
+                var aiMsg = { role:'ai', content:aiText, time:new Date().toISOString() };
+                history.push(aiMsg);
+                saveHistory(history);
+                appendMsg(aiMsg);
+            }, 700 + Math.random()*500);
+        }
+
+        timeoutId = setTimeout(function(){
+            // Backend timed out – use rules
+            var rule = matchRule(text);
+            finish(rule || 'I have noted your concern. For the best advice, please consult a medical professional.\n\nUse the **Nearby Clinics** tab to find and book an appointment. Is there anything else I can help you with?');
+        }, 4000);
+
+        // Try fetch
+        fetch('http://localhost/symto_tracker/api/analyze.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({symptomsText:text, age:'30', gender:'Unknown', conditions:[]})
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+            if (d && !d.error && d.recommendation) {
+                finish('🩺 **AI Analysis: ' + (d.condition||'Symptoms reviewed') + '**\n\n' + d.recommendation);
+            } else {
+                var rule = matchRule(text);
+                finish(rule || 'I have noted your concern. Please consult a medical professional for personalized advice.');
+            }
+        })
+        .catch(function(){
+            var rule = matchRule(text);
+            finish(rule || 'I have noted your concern. Please consult a medical professional for personalized advice.\n\nUse the **Nearby Clinics** tab to book an appointment near you.');
+        });
+    }
+
+    // Expose to global for chip buttons
+    window.sendMsg = sendMsg;
+
+    btnSnd.addEventListener('click', function(){ sendMsg(inp.value); });
+
+    inp.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(inp.value); }
+    });
+    inp.addEventListener('input', function(){
+        inp.style.height = 'auto';
+        inp.style.height = Math.min(inp.scrollHeight, 110) + 'px';
+    });
+
+    btnClr.addEventListener('click', function(){
+        if (!confirm('Clear chat history?')) return;
+        localStorage.removeItem(KEY);
+        msgsEl.innerHTML = '';
+        history.length = 0;
+        var w = {role:'ai', content:'Chat cleared! How can I help you today?', time:new Date().toISOString()};
+        history.push(w); saveHistory(history); appendMsg(w);
+    });
+})();
+</script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>

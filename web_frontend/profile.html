@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profile & Settings - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0B0F17;
+            --card-dark: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --brand-blue: #3B82F6;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B0F17;
+            background: radial-gradient(circle at 50% 0%, #1E2640 0%, #0B0F17 70%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            margin-top: 10px;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .profile-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563EB, #7C3AED);
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: #FFF;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 4px;
+        }
+
+        .profile-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Menu Rows */
+        .menu-list-card {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .menu-item-row {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s ease;
+        }
+
+        .menu-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .menu-item-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #3B82F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+        }
+
+        .menu-item-label {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .menu-item-value {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-right: 8px;
+        }
+
+        .menu-arrow-icon {
+            color: #64748B;
+        }
+
+        .btn-logout-row {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout-row:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Fullscreen Modal */
+        .modal-overlay-fs {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 15, 23, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay-fs.open {
+            display: flex;
+        }
+
+        .fs-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .fs-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFF;
+        }
+        .fs-back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #FFF;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 14px 16px;
+            color: #FFF;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 16px;
+        }
+
+        .lang-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .lang-item-btn {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: #FFF;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .lang-item-btn:hover {
+            border-color: #3B82F6;
+            background: rgba(59, 130, 246, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- ── Header ── -->
+        <header class="app-header">
+            <h1 class="header-title" id="tv_profile_header" data-i18n="profile_settings">Profile & Settings</h1>
+            <a href="dashboard.html" style="color: #9CA3AF; text-decoration: none; font-size: 13px; font-weight: 700;">Done</a>
+        </header>
+
+        <!-- ── User Profile Card ── -->
+        <div class="profile-card">
+            <div class="profile-avatar-circle" id="profile_avatar">YK</div>
+            <div class="profile-name" id="profileName">Yasaswini Kuchi</div>
+            <div class="profile-email" id="profileEmail">yasaswini@example.com</div>
+        </div>
+
+        <!-- ── Settings Menu List ── -->
+        <div class="menu-list-card">
+
+            <!-- Personal Information -->
+            <div class="menu-item-row" onclick="openFSModal('personalModal')">
+                <div class="menu-item-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_personal_info" data-i18n="personal_info">Personal Information</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+            <!-- Medical Records -->
+            <a href="history.html" class="menu-item-row">
+                <div class="menu-item-icon" style="background: rgba(168, 85, 247, 0.15); color: #A855F7;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_medical_records" data-i18n="medical_records">Medical Records</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </a>
+
+            <!-- App Theme Selector -->
+            <div class="menu-item-row" onclick="toggleThemeMode()">
+                <div class="menu-item-icon" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_app_theme" data-i18n="app_theme">App Theme</div>
+                <div class="menu-item-value" id="val_app_theme">Dark Mode 🌙</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+            <!-- App Language Selector (World Languages) -->
+            <div class="menu-item-row" onclick="openFSModal('langModal')">
+                <div class="menu-item-icon" style="background: rgba(34, 197, 94, 0.15); color: #22C55E;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_app_language" data-i18n="app_language">App Language</div>
+                <div class="menu-item-value" id="val_app_language">Telugu (తెలుగు) 🇮🇳</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+            <!-- Privacy & Security -->
+            <div class="menu-item-row" onclick="openFSModal('privacyModal')">
+                <div class="menu-item-icon" style="background: rgba(14, 165, 233, 0.15); color: #0EA5E9;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_privacy" data-i18n="privacy_security">Privacy & Security</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+            <!-- Help & Support -->
+            <div class="menu-item-row" onclick="openFSModal('helpModal')">
+                <div class="menu-item-icon" style="background: rgba(236, 72, 153, 0.15); color: #EC4899;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="menu-item-label" id="lbl_help" data-i18n="help_support">Help & Support</div>
+                <div class="menu-arrow-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Log Out Button -->
+        <button class="btn-logout-row" id="btnLogout">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span id="lbl_logout" data-i18n="log_out">Log Out</span>
+        </button>
+
+    </div>
+
+    <!-- ── Language Selector Modal (World Languages Search) ── -->
+    <div class="modal-overlay-fs" id="langModal">
+        <div class="fs-header">
+            <button class="fs-back-btn" onclick="closeFSModal('langModal')">✕</button>
+            <div class="fs-title">Select App Language 🌐</div>
+        </div>
+        <input type="text" class="lang-search-input" id="langSearch" placeholder="🔍 Search language (e.g. Telugu, Hindi, Spanish)..." onkeyup="filterLanguages()">
+        <div class="lang-list" id="langListContainer"></div>
+    </div>
+
+    <!-- ── Personal Info Modal ── -->
+    <div class="modal-overlay-fs" id="personalModal">
+        <div class="fs-header">
+            <button class="fs-back-btn" onclick="closeFSModal('personalModal')">✕</button>
+            <div class="fs-title">Personal Information</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+            <div>
+                <label style="font-size:12px; color:#9CA3AF; display:block; margin-bottom:6px;">Full Name</label>
+                <input type="text" id="editName" style="width:100%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); padding:14px; border-radius:14px; color:#FFF; font-size:14px;" value="Yasaswini Kuchi">
+            </div>
+            <div>
+                <label style="font-size:12px; color:#9CA3AF; display:block; margin-bottom:6px;">Email Address</label>
+                <input type="email" id="editEmail" style="width:100%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); padding:14px; border-radius:14px; color:#FFF; font-size:14px;" value="yasaswini@example.com">
+            </div>
+            <button onclick="saveProfileChanges()" style="background:#3B82F6; color:#FFF; border:none; padding:16px; border-radius:14px; font-weight:800; margin-top:10px; cursor:pointer;">SAVE CHANGES</button>
+        </div>
+    </div>
+
+    <!-- ── Privacy & Security Center Modal ── -->
+    <div class="modal-overlay-fs" id="privacyModal">
+        <div class="fs-header">
+            <button class="fs-back-btn" onclick="closeFSModal('privacyModal')">✕</button>
+            <div class="fs-title">Privacy & Security Controls 🔒</div>
+        </div>
+        
+        <div class="privacy-controls-container" style="display:flex; flex-direction:column; gap:16px;">
+
+            <!-- Encryption Status Badge -->
+            <div style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="font-size:24px;">🛡️</span>
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:#4ADE80;">AES-256 Encryption Active</div>
+                        <div style="font-size:12px; color:#94A3B8;">All local health & symptom data is encrypted</div>
+                    </div>
+                </div>
+                <span style="font-size:11px; background:#22C55E; color:#FFF; padding:4px 8px; border-radius:12px; font-weight:800;">ENCRYPTED</span>
+            </div>
+
+            <!-- Setting 1: App PIN Security Lock -->
+            <div class="security-toggle-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size:14px; font-weight:800; color:#FFF; margin-bottom:4px;">App PIN Security Lock 🔑</div>
+                    <div style="font-size:12px; color:#94A3B8;">Require security PIN when opening SymptoTrack</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleAppLock" onchange="toggleSecurityFeature('app_lock', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- Setting 2: Incognito Health Mode -->
+            <div class="security-toggle-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size:14px; font-weight:800; color:#FFF; margin-bottom:4px;">Incognito Health Mode 🕵️</div>
+                    <div style="font-size:12px; color:#94A3B8;">Do not save symptom checks to local history</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleIncognito" onchange="toggleSecurityFeature('incognito', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- Setting 3: Anonymous Telemetry -->
+            <div class="security-toggle-card" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-size:14px; font-weight:800; color:#FFF; margin-bottom:4px;">Anonymous Disease Telemetry 📊</div>
+                    <div style="font-size:12px; color:#94A3B8;">Contribute anonymized health stats to local radar</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleTelemetry" checked onchange="toggleSecurityFeature('telemetry', this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- Data Action Buttons -->
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                <button onclick="clearAllHealthData()" style="width:100%; background:rgba(239,68,68,0.2); border:1px solid #EF4444; color:#F87171; padding:14px; border-radius:14px; font-weight:800; cursor:pointer;">
+                    🗑️ WIPE ALL LOCAL SYMPTOM HISTORY & CACHE
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Help Modal ── -->
+    <div class="modal-overlay-fs" id="helpModal">
+        <div class="fs-header">
+            <button class="fs-back-btn" onclick="closeFSModal('helpModal')">✕</button>
+            <div class="fs-title">Help & Support</div>
+        </div>
+        <div style="line-height:1.6; font-size:14px; color:#D1D5DB; display:flex; flex-direction:column; gap:14px;">
+            <p>• <strong>Medical Emergency?</strong> Call <strong>108 / 112</strong> immediately.</p>
+            <p>• <strong>Need Assistance?</strong> Reach our medical helpline support team 24/7.</p>
+            <a href="mailto:support@symtotrack.com" style="background:#3B82F6; color:#FFF; text-align:center; padding:14px; border-radius:14px; text-decoration:none; font-weight:800; margin-top:10px;">CONTACT SUPPORT</a>
+        </div>
+    </div>
+
+    <!-- ── Mobile App Bottom Navigation Bar ── -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script src="app-lock.js"></script>
+    <script src="theme-manager.js"></script>
+    <script src="i18n.js"></script>
+    <script src="profile.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp'
+}
+
+import java.net.NetworkInterface
+import java.net.Inet4Address
+
+def getLocalIP() {
+    def defaultIp = "10.0.2.2"
+    try {
+        def interfaces = NetworkInterface.getNetworkInterfaces()
+        def candidates = []
+        while (interfaces.hasMoreElements()) {
+            def netInterface = interfaces.nextElement()
+            if (netInterface.isLoopback() || !netInterface.isUp() || netInterface.isVirtual()) {
+                continue
+            }
+            def addresses = netInterface.getInetAddresses()
+            while (addresses.hasMoreElements()) {
+                def addr = addresses.nextElement()
+                if (addr instanceof Inet4Address) {
+                    def ip = addr.getHostAddress()
+                    def name = netInterface.getName().toLowerCase()
+                    def displayName = netInterface.getDisplayName().toLowerCase()
+                    candidates.add([ip: ip, name: name, displayName: displayName])
+                }
+            }
+        }
+        
+        // 1. Prefer Wi-Fi interfaces
+        for (c in candidates) {
+            if (c.displayName.contains("wi-fi") || c.displayName.contains("wireless") || c.name.contains("wlan")) {
+                if (c.displayName.contains("virtual") || c.displayName.contains("direct") || c.ip == "192.168.137.1") {
+                    continue
+                }
+                return c.ip
+            }
+        }
+        // 2. Then Ethernet
+        for (c in candidates) {
+            if (c.displayName.contains("ethernet") || c.name.contains("eth")) {
+                return c.ip
+            }
+        }
+        // 3. Fallback to any active non-virtual/non-host-only IPv4
+        for (c in candidates) {
+            if (!c.displayName.contains("virtual") && !c.displayName.contains("host-only")) {
+                return c.ip
+            }
+        }
+        if (!candidates.isEmpty()) {
+            return candidates[0].ip
+        }
+    } catch (Exception e) {
+        // ignore
+    }
+    return defaultIp
+}
+
+def resolvedIp = getLocalIP()
+println "----------------------------------------"
+println "   [SymtoTrack] SERVER_IP resolved to: ${resolvedIp}"
+println "----------------------------------------"
+
+// ADB path from local.properties
+def adbExe = "${android.sdkDirectory}/platform-tools/adb.exe"
+
+// After every installDebug, automatically run 'adb reverse' so the phone
+// tunnels port 80 through the USB cable to this machine's localhost.
+// This permanently bypasses Windows Firewall and Wi-Fi IP changes.
+tasks.register('setupAdbReverse') {
+    group = 'install'
+    description = 'Forwards phone port 80 → PC localhost:80 via USB (adb reverse)'
+    doLast {
+        try {
+            def result = [adbExe, 'reverse', 'tcp:80', 'tcp:80'].execute()
+            result.waitFor()
+            println "[ADB Reverse] tcp:80 → localhost:80  (exit ${result.exitValue()})"
+        } catch (Exception e) {
+            println "[ADB Reverse] WARNING: ${e.message}"
+        }
+    }
+}
+
+android {
+    namespace 'com.symtotrack'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.symtotrack"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        // Dynamically resolved server IP (PC local IP) for XAMPP connections
+        buildConfigField "String", "SERVER_IP", "\"${resolvedIp}\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+// Wire setupAdbReverse to run automatically right after installDebug
+afterEvaluate {
+    tasks.named('installDebug') {
+        finalizedBy 'setupAdbReverse'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation libs.androidx.activity.ktx
+    implementation 'org.json:json:20231013'
+    
+    // External APIs and Libraries
+    implementation 'com.razorpay:checkout:1.6.33'
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
+    // Advanced feature dependencies
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
+    implementation 'com.google.mlkit:text-recognition:16.0.0'
+    implementation 'com.google.ar:core:1.38.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.9.0'
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+    implementation 'io.realm:realm-android-library:10.15.1'
+    implementation 'com.itextpdf:itext7-core:7.2.5'
+    implementation 'com.airbnb.android:lottie:5.2.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'androidx.biometric:biometric:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    
+    // Room Database
+    implementation 'androidx.room:room-runtime:2.6.1'
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.espresso.core
+    androidTestImplementation libs.androidx.junit
+    ksp 'androidx.room:room-compiler:2.6.1'
+}

@@ -1,0 +1,82 @@
+name: CI/CD Deployment & Live GitHub Pages E2E Testing
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openpyxl pandas requests selenium appium-python-client
+
+      - name: Build Web & Test Suite
+        run: |
+          python web_frontend/generate_reports.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web_frontend
+
+  e2e-live-testing:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Testing Dependencies
+        run: |
+          pip install openpyxl requests selenium
+
+      - name: Run E2E Live Test Suite Against GitHub Pages
+        env:
+          BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          python web_frontend/generate_reports.py
+
+      - name: Upload Test Reports & Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Automation-Test-Results
+          path: |
+            web_frontend/Test Results/
+            web_frontend/Vulnerability Test Results/
+          retention-days: 30
+
+      - name: Publish GitHub Action Execution Summary
+        if: always()
+        run: |
+          cat "web_frontend/Test Results/Summary/summary.md" >> $GITHUB_STEP_SUMMARY
