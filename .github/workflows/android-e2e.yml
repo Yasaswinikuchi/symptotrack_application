@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.0
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Fix Line Endings & Build Android Debug APK
         run: |
@@ -29,13 +29,12 @@ jobs:
           ./gradlew assembleDebug --no-daemon || true
 
       - name: Setup Python & Dependencies
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.4.0
         with:
           python-version: '3.11'
 
       - name: Install Automation Libraries
         run: |
-          python -m pip install --upgrade pip
           pip install openpyxl requests
 
       - name: Generate Appium E2E Reports
@@ -44,7 +43,7 @@ jobs:
 
       - name: Upload Android Test Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: Android-Appium-Reports
           path: |
