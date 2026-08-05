@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Result - SymptoTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+</head>
+<body class="result-body">
+
+    <!-- Desktop Top Navigation -->
+    <nav class="top-nav">
+        <a href="dashboard.html" class="nav-brand">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 4H24V16H36V24H24V36H16V24H4V16H16V4Z" fill="#2E6CEB"/>
+                <path d="M10 24L18 16L24 22L32 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            SymptoTrack
+        </a>
+        <div class="nav-links">
+            <a href="dashboard.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dashboard</a>
+            <a href="symptoms.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Symptoms</a>
+            <a href="nearby.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Nearby Clinics</a>
+            <a href="history.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Records</a>
+            <a href="profile.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</a>
+        </div>
+    </nav>
+
+    <div class="result-container">
+        
+        <!-- Header -->
+        <header class="symptoms-header" style="background: transparent;">
+            <a href="history.html" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="#0F172A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <h1 class="header-title">Analysis Result</h1>
+        </header>
+
+        <main class="result-main">
+            <!-- Top Section -->
+            <section class="risk-section">
+                <div class="risk-icon medium" id="riskIcon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="risk-label">RISK LEVEL</div>
+                <div class="risk-value" id="riskValue">Medium</div>
+                <p class="risk-description" id="riskDescription">
+                    Based on your symptoms, we detected a moderate health risk. Medical consultation is advised.
+                </p>
+            </section>
+
+            <!-- Content Area (Gray background) -->
+            <div class="result-content-area">
+                <!-- Possible Conditions -->
+                <h2 class="section-title">Possible Conditions</h2>
+                <div id="conditionsList">
+                    <!-- Dynamic Conditions go here -->
+                </div>
+
+                <!-- Recommendations -->
+                <h2 class="section-title" style="margin-top: 24px;">Recommendations</h2>
+                <div class="recommendations-card" id="recommendationsList">
+                    <!-- Dynamic Recommendations go here -->
+                </div>
+
+                <!-- Actions -->
+                <div class="action-buttons">
+                    <button class="btn-primary" id="btnDeleteHistory" style="background: #EF4444; border: none;">Delete Report</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="history_result.js"></script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Choose Your Plan - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 75%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding: 24px 16px 100px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ── Top App Icon & Header ── */
+        .plans-header {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 28px;
+        }
+
+        .plans-icon-badge {
+            width: 76px;
+            height: 76px;
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            border-radius: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 35px rgba(37, 99, 235, 0.5);
+            margin-bottom: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .plans-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .plans-subtitle {
+            font-size: 14px;
+            color: #94A3B8;
+            font-weight: 500;
+        }
+
+        /* ── Plan Cards ── */
+        .plan-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .plan-card.basic-card {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .plan-card.premium-card {
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 16px 40px rgba(139, 92, 246, 0.25);
+        }
+
+        .plan-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .plan-tagline {
+            font-size: 12px;
+            color: #38BDF8;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .plan-tagline-purple {
+            font-size: 12px;
+            color: #C084FC;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        /* Price Badges */
+        .price-badge-free {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22C55E;
+            color: #4ADE80;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 12px;
+        }
+
+        .price-badge-basic {
+            background: #EFF6FF;
+            color: #2563EB;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 12px;
+        }
+
+        .price-badge-premium {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid #A855F7;
+            color: #E9D5FF;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 12px;
+        }
+
+        /* Feature List */
+        .feature-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-item.enabled {
+            color: #E2E8F0;
+        }
+
+        .feature-item.disabled {
+            color: #64748B;
+        }
+
+        .feature-icon-check {
+            color: #4ADE80;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .feature-icon-cross {
+            color: #64748B;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .btn-continue-free {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #38BDF8;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-continue-free:hover {
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-get-basic {
+            width: 100%;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-get-basic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6);
+        }
+
+        .btn-get-premium {
+            width: 100%;
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-get-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        .plans-footer {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .skip-btn {
+            background: none;
+            border: none;
+            color: #94A3B8;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 12px;
+        }
+
+        .skip-btn:hover {
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <div class="plans-header">
+            <div class="plans-icon-badge">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <h1 class="plans-title">Choose Your Plan</h1>
+            <p class="plans-subtitle">Start free. Upgrade anytime.</p>
+        </div>
+
+        <!-- 1. Free Plan Card -->
+        <div class="plan-card">
+            <div class="plan-card-top">
+                <div>
+                    <div class="plan-name">Free</div>
+                    <div class="plan-tagline">Standard Access</div>
+                </div>
+                <div class="price-badge-free">₹0 / month</div>
+            </div>
+
+            <ul class="feature-list">
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Symptom Tracking</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Basic Health Reports</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Pill Reminders (5 meds)</li>
+                <li class="feature-item disabled"><span class="feature-icon-cross">✕</span> AI Health Chat</li>
+                <li class="feature-item disabled"><span class="feature-icon-cross">✕</span> Family Health Profiles</li>
+                <li class="feature-item disabled"><span class="feature-icon-cross">✕</span> Outbreak Radar</li>
+            </ul>
+
+            <button onclick="selectPlan('Free', 0)" class="btn-continue-free">CONTINUE FREE</button>
+        </div>
+
+        <!-- 2. Basic Plan Card -->
+        <div class="plan-card basic-card">
+            <div class="plan-card-top">
+                <div>
+                    <div class="plan-name">Basic</div>
+                    <div class="plan-tagline">Most Popular</div>
+                </div>
+                <div class="price-badge-basic">₹99 / month</div>
+            </div>
+
+            <ul class="feature-list">
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Everything in Free</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> AI Health Chat (50 msgs)</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Family Health Profiles (3)</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Outbreak Radar</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Nearby Hospitals</li>
+                <li class="feature-item disabled"><span class="feature-icon-cross">✕</span> Unlimited AI Chat</li>
+                <li class="feature-item disabled"><span class="feature-icon-cross">✕</span> Priority Support</li>
+            </ul>
+
+            <button onclick="selectPlan('Basic', 99)" class="btn-get-basic">GET BASIC – ₹99/MO</button>
+        </div>
+
+        <!-- 3. Premium Plan Card -->
+        <div class="plan-card premium-card">
+            <div class="plan-card-top">
+                <div>
+                    <div class="plan-name">Premium Pro</div>
+                    <div class="plan-tagline-purple">⭐ BEST VALUE (Save 42%)</div>
+                </div>
+                <div class="price-badge-premium">₹199 / month</div>
+            </div>
+
+            <ul class="feature-list">
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Everything in Basic</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Unlimited AI Health Chat</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Unlimited Family Profiles</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Advanced Analytics</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Export Health Reports (PDF)</li>
+                <li class="feature-item enabled"><span class="feature-icon-check">✓</span> Priority 24/7 Support</li>
+            </ul>
+
+            <button onclick="selectPlan('Premium', 199)" class="btn-get-premium">GET PREMIUM – ₹199/MO</button>
+        </div>
+
+        <div class="plans-footer">
+            <div style="font-size:12px; color:#64748B;">🔒 Secured by Razorpay • Cancel anytime</div>
+            <button onclick="window.location.href='dashboard.html'" class="skip-btn">Skip for now</button>
+        </div>
+
+    </div>
+
+    <script>
+        function selectPlan(planName, fee) {
+            localStorage.setItem('user_plan', planName);
+            localStorage.setItem('booked_fee', fee);
+            localStorage.setItem('booked_hospital', `SymptoTrack ${planName} Plan Membership`);
+
+            if (fee === 0) {
+                window.location.href = 'dashboard.html';
+            } else {
+                window.location.href = `payment.html?fee=${fee}&hospital=${encodeURIComponent('SymptoTrack ' + planName + ' Plan Subscription')}`;
+            }
+        }
+    </script>
+</body>
+</html>

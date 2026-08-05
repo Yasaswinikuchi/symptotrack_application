@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Create Account - SymptoTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #F1F5F9;
+            color: #0F172A;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+        }
+
+        .signup-card {
+            background: #FFFFFF;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+            border: 1px solid #E2E8F0;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .brand-icon-circle {
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0F172A;
+            letter-spacing: -0.4px;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #64748B;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* ── Social / Quick Auth Buttons ── */
+        .btn-social-auth {
+            width: 100%;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1E293B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            margin-bottom: 12px;
+        }
+
+        .btn-social-auth:hover {
+            background: #F8FAFC;
+            border-color: #94A3B8;
+        }
+
+        .btn-otp-auth {
+            width: 100%;
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 16px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2563EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-otp-auth:hover {
+            background: #DBEAFE;
+        }
+
+        /* ── Divider ── */
+        .divider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: #E2E8F0;
+        }
+
+        .divider-text {
+            font-size: 11px;
+            font-weight: 800;
+            color: #94A3B8;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* ── Form Inputs ── */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-left-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 16px;
+            color: #94A3B8;
+            pointer-events: none;
+        }
+
+        .form-input-custom {
+            width: 100%;
+            background: #F8FAFC !important;
+            border: 1px solid #CBD5E1 !important;
+            border-radius: 14px !important;
+            padding: 14px 16px 14px 42px !important;
+            color: #0F172A !important;
+            -webkit-text-fill-color: #0F172A !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            outline: none !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
+
+        .form-input-custom:focus {
+            border-color: #2563EB !important;
+            background: #FFFFFF !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+        }
+
+        .form-input-custom::placeholder {
+            color: #94A3B8 !important;
+            -webkit-text-fill-color: #94A3B8 !important;
+            font-weight: 500;
+        }
+
+        .no-left-icon {
+            padding-left: 16px !important;
+        }
+
+        /* ── Checkbox ── */
+        .terms-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #475569;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .terms-checkbox-row input {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563EB;
+            cursor: pointer;
+        }
+
+        /* ── Submit Button ── */
+        .btn-create-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-create-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .footer-link-text {
+            text-align: center;
+            font-size: 13px;
+            color: #64748B;
+            font-weight: 600;
+        }
+
+        .footer-link-text a {
+            color: #2563EB;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .footer-link-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-card">
+
+        <!-- Top Header Row -->
+        <div class="header-row">
+            <div class="brand-icon-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="header-title">Create Account</h1>
+                <p class="header-subtitle">Join SymptoTrack today</p>
+            </div>
+        </div>
+
+        <!-- Quick Google Sign Up -->
+        <button type="button" class="btn-social-auth" onclick="window.location.href='login.html'">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.3 7.31 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.99 0 12s.46 3.83 1.26 5.42l4.02-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            <span>Sign up with Google</span>
+        </button>
+
+        <!-- Quick Mobile OTP Sign Up -->
+        <button type="button" class="btn-otp-auth" onclick="window.location.href='login.html'">
+            <span style="font-size:16px;">📞</span>
+            <span>Sign up with Mobile OTP</span>
+        </button>
+
+        <!-- Divider -->
+        <div class="divider-row">
+            <div class="divider-line"></div>
+            <span class="divider-text">OR SIGN UP WITH EMAIL</span>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Create Account Form -->
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <!-- Full Name -->
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <div class="input-icon-wrapper">
+                    <input type="text" id="signupName" class="form-input-custom no-left-icon" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <!-- Email Address -->
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <div class="input-icon-wrapper">
+                    <span class="input-left-icon">✉️</span>
+                    <input type="email" id="signupEmail" class="form-input-custom" placeholder="you@example.com" required>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="input-icon-wrapper">
+                    <span class="input-left-icon">🔒</span>
+                    <input type="password" id="signupPassword" class="form-input-custom" placeholder="min 8 characters" onkeyup="checkPasswordStrength(this.value)" required>
+                </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <div class="input-icon-wrapper">
+                    <span class="input-left-icon">🔒</span>
+                    <input type="password" id="signupConfirmPassword" class="form-input-custom" placeholder="Re-enter password" required>
+                </div>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <label class="terms-checkbox-row">
+                <input type="checkbox" id="termsCheck" required checked>
+                <span>I agree to the Terms of Service and Privacy Policy</span>
+            </label>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-create-submit">Create Account</button>
+        </form>
+
+        <!-- Footer Link -->
+        <div class="footer-link-text">
+            Already have an account? <a href="login.html">Log In</a>
+        </div>
+
+    </div>
+
+    <script src="signup.js"></script>
+
+</body>
+</html>

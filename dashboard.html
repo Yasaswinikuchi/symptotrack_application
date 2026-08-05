@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SymptoTrack - Health Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B !important;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%) !important;
+            color: #FFFFFF !important;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        /* ── Top Header Greeting ── */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            margin-top: 8px;
+        }
+
+        .brand-subtitle {
+            font-size: 13px;
+            color: #64748B;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-greeting {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            letter-spacing: -0.4px;
+        }
+
+        .profile-avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #3B82F6;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            cursor: pointer;
+        }
+
+        /* ── Active Appointment Card ── */
+        .appointment-card {
+            background: rgba(19, 28, 49, 0.95) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 24px !important;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .appointment-info-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .location-icon-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3B82F6;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .appointment-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            margin-bottom: 4px;
+        }
+
+        .appointment-desc {
+            font-size: 12px;
+            color: #94A3B8 !important;
+            font-weight: 500;
+        }
+
+        .btn-book-appointment {
+            width: 100%;
+            background: #3B82F6;
+            color: #FFFFFF !important;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .btn-book-appointment:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+        }
+
+        /* ── Health Vitals Strip ── */
+        .vitals-strip {
+            background: rgba(19, 28, 49, 0.95) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            padding: 16px 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .vital-label {
+            font-size: 11px;
+            color: #94A3B8 !important;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .vital-value {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .val-red { color: #EF4444 !important; }
+        .val-blue { color: #3B82F6 !important; }
+        .val-green { color: #22C55E !important; }
+
+        /* ── Healthcare Features Grid ── */
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .feature-card {
+            background: rgba(19, 28, 49, 0.95) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            padding: 22px 14px;
+            text-decoration: none;
+            color: #FFFFFF !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.5) !important;
+        }
+
+        .feature-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .feature-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 11px;
+            color: #94A3B8 !important;
+            font-weight: 500;
+        }
+
+        /* ── Full-Width AI Health Assistant Card ── */
+        .ai-assistant-card {
+            background: rgba(19, 28, 49, 0.95) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-assistant-card:hover {
+            border-color: rgba(59, 130, 246, 0.5) !important;
+            transform: translateY(-2px);
+        }
+
+        .ai-left-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ai-avatar-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #3B82F6;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .ai-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            margin-bottom: 4px;
+        }
+
+        .ai-card-subtitle {
+            font-size: 12px;
+            color: #94A3B8 !important;
+        }
+
+        .ai-chevron {
+            color: #3B82F6 !important;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        /* ── Red Emergency SOS Card ── */
+        .emergency-bar-card {
+            background: #4A1212 !important;
+            border: 1px solid #7F1D1D !important;
+            border-radius: 20px !important;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .emergency-left-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .emergency-pulse-icon {
+            color: #EF4444;
+        }
+
+        .emergency-bar-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #F87171 !important;
+            margin-bottom: 2px;
+        }
+
+        .emergency-bar-sub {
+            font-size: 12px;
+            color: #FCA5A5 !important;
+        }
+
+        .btn-emergency-call {
+            background: #EF4444;
+            color: #FFFFFF !important;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ── Bottom Navigation Bar ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 9999;
+            padding: 0 12px;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            height: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #3B82F6;
+        }
+
+        .bottom-nav .nav-item.active svg {
+            stroke: #3B82F6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div>
+                <div class="brand-subtitle">SymptoTrack</div>
+                <div class="user-greeting" id="tv_greeting">Good evening, Yasaswini Kuchi 👋</div>
+            </div>
+            <div class="profile-avatar-circle" id="themeAvatarBtn" onclick="SymptoTheme.openModal()" title="Change Theme (Dark, Light, System Default)" style="display:flex; align-items:center; justify-content:center; color:#FFF; font-weight:800; font-size:16px;">
+                <span>YK</span>
+            </div>
+        </header>
+
+        <!-- Active Appointment Card -->
+        <div class="appointment-card">
+            <div class="appointment-info-row">
+                <div class="location-icon-badge">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div>
+                    <div class="appointment-title">No Active Appointment</div>
+                    <div class="appointment-desc">Book a clinic visit to get a live queue token</div>
+                </div>
+            </div>
+            <a href="alerts.html" class="btn-book-appointment">
+                + BOOK APPOINTMENT & GET TOKEN
+            </a>
+        </div>
+
+        <!-- Health Vitals Overview Strip -->
+        <div class="vitals-strip">
+            <div>
+                <div class="vital-label">Heart Rate</div>
+                <div class="vital-value val-red">72 bpm</div>
+            </div>
+            <div>
+                <div class="vital-label">Blood Pressure</div>
+                <div class="vital-value val-blue">118/76</div>
+            </div>
+            <div>
+                <div class="vital-label">Health Score</div>
+                <div class="vital-value val-green">98%</div>
+            </div>
+        </div>
+
+        <!-- Healthcare Features Section -->
+        <h2 class="section-title" data-i18n="healthcare_features">Healthcare Features</h2>
+
+        <div class="features-grid">
+            <!-- Card 1: Enter Symptoms -->
+            <a href="symptoms.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #3B82F6;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="enter_symptoms">Enter Symptoms</div>
+                <div class="feature-desc" data-i18n="ai_analysis">AI Analysis</div>
+            </a>
+
+            <!-- Card 2: Scan Image -->
+            <a href="scan.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #3B82F6;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="scan_image">Scan Image</div>
+                <div class="feature-desc" data-i18n="prescription_lab">Prescription/Lab</div>
+            </a>
+
+            <!-- Card 3: Voice Symptoms -->
+            <a href="voice.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="voice_symptoms">Voice Symptoms</div>
+                <div class="feature-desc" data-i18n="speak_symptoms">Speak Symptoms</div>
+            </a>
+
+            <!-- Card 4: Active Alerts -->
+            <a href="alerts.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #A855F7;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="active_alerts">Active Alerts</div>
+                <div class="feature-desc" data-i18n="queue_tokens">Queue Tokens & Visits</div>
+            </a>
+
+            <!-- Card 5: Medicine Reminders -->
+            <a href="reminders.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #3B82F6;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="medicine_reminders">Medicine Reminders</div>
+                <div class="feature-desc" data-i18n="pill_schedules">Pill Schedules</div>
+            </a>
+
+            <!-- Card 6: Family Profiles -->
+            <a href="family.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(34, 197, 94, 0.15); color: #22C55E;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="family_profiles">Family Profiles</div>
+                <div class="feature-desc" data-i18n="health_records">Health Records</div>
+            </a>
+
+            <!-- Card 7: Symptom History -->
+            <a href="history.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #A855F7;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="symptom_history">Symptom History</div>
+                <div class="feature-desc" data-i18n="past_reports">Past Reports</div>
+            </a>
+
+            <!-- Card 8: Body Heatmap -->
+            <a href="heatmap.html" class="feature-card">
+                <div class="feature-icon-box" style="background: rgba(249, 115, 22, 0.15); color: #F97316;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="feature-name" data-i18n="body_heatmap">Body Heatmap</div>
+                <div class="feature-desc" data-i18n="visual_symptoms">Visual Symptoms</div>
+            </a>
+        </div>
+
+        <!-- Full-Width AI Health Assistant Card -->
+        <a href="chatbot.html" class="ai-assistant-card">
+            <div class="ai-left-group">
+                <div class="ai-avatar-circle"></div>
+                <div>
+                    <div class="ai-card-title" data-i18n="ai_assistant">AI Health Assistant</div>
+                    <div class="ai-card-subtitle" data-i18n="chat_doctor_ai">Chat with your personal doctor AI</div>
+                </div>
+            </div>
+            <div class="ai-chevron">›</div>
+        </a>
+
+        <!-- Red Emergency SOS Card -->
+        <div class="emergency-bar-card">
+            <div class="emergency-left-group">
+                <svg class="emergency-pulse-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <div>
+                    <div class="emergency-bar-title" data-i18n="emergency_services">Emergency Services</div>
+                    <div class="emergency-bar-sub" data-i18n="emergency_call_desc">Tap to call 108 immediately</div>
+                </div>
+            </div>
+            <a href="tel:108" class="btn-emergency-call" data-i18n="call">CALL</a>
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span data-i18n="nav_home">Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span data-i18n="nav_symptoms">Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span data-i18n="nav_history">History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span data-i18n="nav_nearby">Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span data-i18n="nav_profile">Profile</span>
+        </a>
+    </nav>
+
+    <script src="app-lock.js"></script>
+    <script src="theme-manager.js"></script>
+    <script src="i18n.js"></script>
+    <script>
+        function updateLiveGreeting() {
+            const userName = localStorage.getItem('user_name') || 'Yasaswini Kuchi';
+            const greeting = document.getElementById('tv_greeting');
+            
+            const hour = new Date().getHours();
+            let timeGreeting = "Good morning";
+            if (hour >= 12 && hour < 17) {
+                timeGreeting = "Good afternoon";
+            } else if (hour >= 17 && hour < 22) {
+                timeGreeting = "Good evening";
+            } else {
+                timeGreeting = "Good night";
+            }
+
+            if (greeting) greeting.innerText = `${timeGreeting}, ${userName} 👋`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateLiveGreeting();
+            // Continuously update greeting as time passes
+            setInterval(updateLiveGreeting, 30000);
+        });
+    </script>
+
+    <!-- Theme Selector Modal -->
+    <div class="theme-modal-overlay" id="themeModal">
+        <div class="theme-modal-box">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+                <h2 style="font-size:18px; font-weight:800; margin:0;">App Theme Settings</h2>
+                <span onclick="SymptoTheme.closeModal()" style="cursor:pointer; font-size:22px; font-weight:800; color:#94A3B8;">&times;</span>
+            </div>
+            
+            <div class="theme-options-list">
+                <!-- Dark Theme Option -->
+                <div class="theme-option" data-value="dark" onclick="SymptoTheme.set('dark')">
+                    <div class="theme-opt-left">
+                        <span class="theme-opt-icon">🌙</span>
+                        <div>
+                            <div class="theme-opt-title">Dark Theme</div>
+                            <div class="theme-opt-sub">Dark navy & translucent glass</div>
+                        </div>
+                    </div>
+                    <div class="theme-check-icon">✓</div>
+                </div>
+
+                <!-- Light Theme Option -->
+                <div class="theme-option" data-value="light" onclick="SymptoTheme.set('light')">
+                    <div class="theme-opt-left">
+                        <span class="theme-opt-icon">☀️</span>
+                        <div>
+                            <div class="theme-opt-title">Light Theme</div>
+                            <div class="theme-opt-sub">Clean slate & bright white</div>
+                        </div>
+                    </div>
+                    <div class="theme-check-icon">✓</div>
+                </div>
+
+                <!-- System Default Option -->
+                <div class="theme-option" data-value="system" onclick="SymptoTheme.set('system')">
+                    <div class="theme-opt-left">
+                        <span class="theme-opt-icon">💻</span>
+                        <div>
+                            <div class="theme-opt-title">System Default</div>
+                            <div class="theme-opt-sub">Automatically match OS settings</div>
+                        </div>
+                    </div>
+                    <div class="theme-check-icon">✓</div>
+                </div>
+            </div>
+
+            <button onclick="SymptoTheme.closeModal()" style="width:100%; margin-top:20px; padding:14px; background:#2563EB; border:none; color:#FFF; border-radius:12px; font-weight:800; cursor:pointer;">DONE</button>
+        </div>
+    </div>
+</body>
+</html>

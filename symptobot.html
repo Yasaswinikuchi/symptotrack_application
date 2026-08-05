@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Dr. SymptoBot – AI Health Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="auth-guard.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:#0B0F17;
+  color:#F3F4F6;
+}
+
+/* NAV */
+.nav{
+  position:fixed;top:0;left:0;right:0;height:50px;
+  background:#0a101e;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 12px;z-index:999;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:7px;
+  color:#fff;text-decoration:none;font-size:14px;font-weight:800;flex-shrink:0;
+}
+.nav-logo em{
+  font-style:normal;background:#3B82F6;color:#fff;
+  font-size:10px;padding:1px 6px;border-radius:20px;
+}
+.nav-links{
+  display:flex;gap:3px;overflow-x:auto;margin-left:8px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{
+  color:#9CA3AF;text-decoration:none;font-size:11px;font-weight:600;
+  padding:4px 9px;border-radius:14px;white-space:nowrap;
+}
+.nav-links a.on,.nav-links a:hover{
+  background:rgba(59,130,246,.2);color:#60A5FA;
+}
+
+/* LAYOUT */
+.wrap{
+  position:fixed;top:50px;bottom:0;left:0;right:0;
+  display:flex;flex-direction:column;
+  max-width:860px;margin:0 auto;
+}
+
+/* HEADER */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;
+  background:rgba(12,20,36,.98);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.bot-av{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#2563EB,#7C3AED);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;
+}
+.dot{
+  position:absolute;bottom:1px;right:1px;
+  width:9px;height:9px;background:#10B981;
+  border-radius:50%;border:2px solid #0B0F17;
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.bot-name{font-size:14px;font-weight:800;color:#fff;}
+.bot-st{font-size:11px;color:#10B981;font-weight:600;}
+.clr-btn{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  color:#9CA3AF;padding:5px 10px;border-radius:8px;
+  font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+
+/* MESSAGES */
+.msgs{
+  flex:1;overflow-y:auto;padding:12px;
+  display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch;
+}
+.msgs::-webkit-scrollbar{width:3px;}
+.msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+
+.row{display:flex;align-items:flex-end;gap:7px;}
+.row.me{flex-direction:row-reverse;}
+
+.av{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,#2563EB,#7C3AED);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+/* ─── KEY FIX: bubble colours are set with inline style in JS ─── */
+/* .ai-bub and .me-bub are just for border-radius */
+.bub{
+  max-width:76%;padding:11px 14px;
+  border-radius:18px;
+  font-size:14px;line-height:1.65;word-break:break-word;
+}
+.bub.ai-bub{border-bottom-left-radius:3px;}
+.bub.me-bub{border-bottom-right-radius:3px;}
+
+.ts{font-size:10px;color:rgba(156,163,175,.8);margin-top:3px;padding:0 3px;}
+.row.me .ts{text-align:right;}
+
+/* TYPING */
+.typing-wrap{
+  display:inline-flex;gap:5px;align-items:center;
+  padding:11px 14px;border-radius:18px;border-bottom-left-radius:3px;
+}
+.td{
+  width:7px;height:7px;background:#6B7280;border-radius:50%;
+  animation:bounce 1.2s infinite;
+}
+.td:nth-child(2){animation-delay:.2s;}
+.td:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px);background:#3B82F6}}
+
+/* CHIPS */
+.chips{
+  display:flex;gap:6px;padding:7px 12px;overflow-x:auto;
+  scrollbar-width:none;border-top:1px solid rgba(255,255,255,.05);flex-shrink:0;
+  -webkit-overflow-scrolling:touch;
+}
+.chips::-webkit-scrollbar{display:none;}
+.chip{
+  background:rgba(28,40,60,.9);border:1px solid rgba(255,255,255,.13);
+  color:#D1D5DB;padding:6px 11px;border-radius:20px;
+  font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;
+  font-family:inherit;transition:all .15s;
+}
+.chip:hover,.chip:active{background:rgba(37,99,235,.35);border-color:#3B82F6;color:#fff;}
+
+/* INPUT */
+.inp-row{
+  display:flex;gap:8px;align-items:flex-end;
+  padding:10px 12px;padding-bottom:max(12px,env(safe-area-inset-bottom));
+  background:#0B0F17;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+#txt{
+  flex:1;
+  background:#ffffff;border:2px solid #3B82F6;color:#111111;
+  border-radius:12px;padding:10px 12px;
+  font-size:14px;font-weight:600;font-family:inherit;
+  outline:none;resize:none;min-height:44px;max-height:110px;line-height:1.5;
+  caret-color:#2563EB;
+}
+#txt::placeholder{color:#999;font-weight:400;}
+#txt:focus{border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(59,130,246,.2);}
+#snd{
+  width:44px;height:44px;flex-shrink:0;
+  background:linear-gradient(135deg,#2563EB,#7C3AED);
+  border:none;border-radius:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;
+}
+#snd:active{transform:scale(.93);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="dashboard.html">
+    <svg viewBox="0 0 40 40" fill="none" style="width:24px;height:24px;">
+      <path d="M16 4H24V16H36V24H24V36H16V24H4V16H16V4Z" fill="#3B82F6"/>
+      <path d="M10 24L18 16L24 22L32 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    SymptoTrack <em>PRO</em>
+  </a>
+  <div class="nav-links">
+    <a href="dashboard.html">Home</a>
+    <a href="symptoms.html">Symptoms</a>
+    <a href="symptobot.html" class="on">AI Chat</a>
+    <a href="voice.html">Voice</a>
+    <a href="scan.html">Scan</a>
+    <a href="nearby.html">Nearby</a>
+    <a href="history.html">Records</a>
+    <a href="reminders.html">Reminders</a>
+    <a href="family.html">Family</a>
+    <a href="reports.html">Reports</a>
+    <a href="heatmap.html">Heatmap</a>
+    <a href="timeline.html">Timeline</a>
+    <a href="profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <div class="bot-av">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 8V4H8"/><rect x="8" y="2" width="4" height="4" rx="1"/>
+          <path d="M4 12a8 8 0 0 1 16 0v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"/>
+          <circle cx="9" cy="14" r="1" fill="white"/><circle cx="15" cy="14" r="1" fill="white"/>
+        </svg>
+        <div class="dot"></div>
+      </div>
+      <div>
+        <div class="bot-name">Dr. SymptoBot</div>
+        <div class="bot-st">● AI Health Assistant • Online</div>
+      </div>
+    </div>
+    <button class="clr-btn" id="clrBtn">🗑 Clear</button>
+  </div>
+
+  <div class="msgs" id="msgs"></div>
+
+  <div class="chips">
+    <button class="chip" onclick="go('I have fever and headache')">🤒 Fever</button>
+    <button class="chip" onclick="go('I have chest pain')">⚠️ Chest Pain</button>
+    <button class="chip" onclick="go('What medicine for cough?')">💊 Medicines</button>
+    <button class="chip" onclick="go('Find me a nearby doctor')">🏥 Find Doctor</button>
+    <button class="chip" onclick="go('Give me sleep tips')">😴 Sleep Tips</button>
+    <button class="chip" onclick="go('Signs of diabetes?')">🩸 Diabetes</button>
+  </div>
+
+  <div class="inp-row">
+    <textarea id="txt" rows="1" placeholder="Type your health question…"></textarea>
+    <button id="snd">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var K='sb_chat_v3';
+var $msgs=document.getElementById('msgs');
+var $txt=document.getElementById('txt');
+var $snd=document.getElementById('snd');
+var $clr=document.getElementById('clrBtn');
+
+/* AI rule engine */
+var R=[
+  {k:['chest pain','heart','cardiac','palpitation'],r:'🚨 URGENT: Chest pain can be life-threatening.\n\nCall 108 / 112 immediately if the pain is severe, spreads to arm or jaw, or comes with sweating. Do NOT wait.'},
+  {k:['fever','temperature','chills','high temp'],r:'🌡️ For fever:\n• Rest and drink 2–3 litres of water daily\n• Paracetamol 500 mg every 6 hrs helps reduce temperature\n• See a doctor if fever is above 39 °C or lasts more than 3 days'},
+  {k:['headache','migraine','head pain'],r:'🧠 For headaches:\n• Rest in a quiet, dark room\n• Stay hydrated and take Ibuprofen or Paracetamol\n• If the headache is sudden and very severe, seek emergency care immediately'},
+  {k:['cough','throat','cold','congestion','sore'],r:'😮 For cough and cold:\n• Drink warm water with honey and ginger\n• Antihistamines help with congestion\n• See a doctor if symptoms last more than 10 days or breathing is difficult'},
+  {k:['stomach','nausea','vomit','diarrhea','abdomen'],r:'🤢 For stomach issues:\n• Fast 2–4 hrs, then eat bland foods (rice, toast, banana)\n• ORS sachets prevent dehydration\n• See a doctor if symptoms last more than 48 hours'},
+  {k:['diabetes','blood sugar','glucose'],r:'🩸 Diabetes management:\n• Monitor blood glucose regularly\n• Low-sugar diet and 30 min exercise daily\n• Signs of low blood sugar: shakiness, sweating — eat glucose immediately'},
+  {k:['blood pressure','hypertension','bp'],r:'💉 For high blood pressure:\n• Reduce salt, alcohol, and stress\n• Exercise 30 min/day\n• Take prescribed medications regularly\n• Monitor BP at home'},
+  {k:['sleep','insomnia','tired','fatigue'],r:'😴 Sleep tips:\n• Keep a consistent sleep schedule\n• Avoid screens 1 hr before bed\n• Keep room dark and cool (18–20 °C)\n• Melatonin 0.5–3 mg can help'},
+  {k:['rash','skin','itch','allergy'],r:'🔴 Skin rashes:\n• Avoid scratching\n• Apply cold compress for relief\n• Antihistamines help with allergic rashes\n• See a dermatologist for persistent rashes'},
+  {k:['anxiety','stress','mental','depression'],r:'🧘 Mental health:\n• Deep breathing (4-7-8 technique) and mindfulness help\n• Regular exercise reduces anxiety\n• Please speak to a mental health professional if symptoms persist'},
+  {k:['doctor','hospital','clinic'],r:'🏥 Use the **Nearby Clinics** tab to find hospitals near you, filter by specialty, and get directions.'},
+  {k:['medicine','drug','medication','tablet','dose'],r:'💊 Always follow your doctor\'s prescription. Never self-medicate with antibiotics. Tell me the specific medicine and I\'ll give you general guidance.'},
+];
+
+function match(t){
+  var l=t.toLowerCase();
+  for(var i=0;i<R.length;i++)
+    for(var j=0;j<R[i].k.length;j++)
+      if(l.indexOf(R[i].k[j])!==-1) return R[i].r;
+  return null;
+}
+
+/* Storage */
+function load(){try{return JSON.parse(localStorage.getItem(K)||'[]');}catch(e){return[];}}
+function save(h){try{localStorage.setItem(K,JSON.stringify(h.slice(-60)));}catch(e){}}
+
+/* Render */
+function ftime(iso){
+  try{var d=new Date(iso);return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+  catch(e){return '';}
+}
+
+function toHtml(s){
+  s=s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s=s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/\n/g,'<br>');
+  return s;
+}
+
+function addMsg(m){
+  var row=document.createElement('div');
+  row.className='row'+(m.role==='user'?' me':'');
+
+  /* INLINE STYLES for backgrounds – cannot be overridden by any cached CSS */
+  if(m.role==='ai'){
+    row.innerHTML=
+      '<div class="av">'+
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">'+
+          '<circle cx="9" cy="12" r="1.5" fill="white"/>'+
+          '<circle cx="15" cy="12" r="1.5" fill="white"/>'+
+          '<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>'+
+        '</svg>'+
+      '</div>'+
+      '<div>'+
+        '<div class="bub ai-bub" style="background:#1a2540;color:#e5e7eb;border:1px solid rgba(255,255,255,0.12);">'+toHtml(m.content)+'</div>'+
+        '<div class="ts">'+ftime(m.time)+'</div>'+
+      '</div>';
+  } else {
+    row.innerHTML=
+      '<div>'+
+        '<div class="bub me-bub" style="background:linear-gradient(135deg,#2563EB,#7C3AED);color:#ffffff;">'+toHtml(m.content)+'</div>'+
+        '<div class="ts">'+ftime(m.time)+'</div>'+
+      '</div>';
+  }
+  $msgs.appendChild(row);
+  setTimeout(function(){$msgs.scrollTop=$msgs.scrollHeight;},30);
+}
+
+function showTyping(){
+  var r=document.createElement('div');
+  r.className='row'; r.id='typing';
+  r.innerHTML=
+    '<div class="av">'+
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">'+
+        '<circle cx="9" cy="12" r="1.5" fill="white"/>'+
+        '<circle cx="15" cy="12" r="1.5" fill="white"/>'+
+        '<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>'+
+      '</svg>'+
+    '</div>'+
+    '<div class="typing-wrap" style="background:#1a2540;border:1px solid rgba(255,255,255,0.12);">'+
+      '<div class="td"></div><div class="td"></div><div class="td"></div>'+
+    '</div>';
+  $msgs.appendChild(r);
+  $msgs.scrollTop=$msgs.scrollHeight;
+}
+function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+/* Init */
+var hist=load();
+if(hist.length===0){
+  var w={role:'ai',content:'👋 Hello! I am **Dr. SymptoBot**, your AI health assistant.\n\nI can help you with:\n• Symptom analysis & advice\n• Medication information\n• Finding nearby clinics\n• General health tips\n\nHow are you feeling today?',time:new Date().toISOString()};
+  hist.push(w); save(hist);
+}
+hist.forEach(function(m){addMsg(m);});
+
+/* Send */
+function send(text){
+  text=(text||'').trim(); if(!text)return;
+  var um={role:'user',content:text,time:new Date().toISOString()};
+  hist.push(um); addMsg(um);
+  $txt.value=''; $txt.style.height='auto';
+  showTyping();
+
+  var done=false;
+  var tid=setTimeout(function(){
+    if(done)return; done=true;
+    hideTyping();
+    var r=match(text)||'I have noted your concern. For the best advice please consult a medical professional.\n\nUse the **Nearby Clinics** tab to book an appointment near you.';
+    var am={role:'ai',content:r,time:new Date().toISOString()};
+    hist.push(am); save(hist); addMsg(am);
+  }, 800+Math.random()*600);
+
+  fetch('http://localhost/symto_tracker/api/analyze.php',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({symptomsText:text,age:'30',gender:'Unknown',conditions:[]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(done)return; done=true; clearTimeout(tid);
+    hideTyping();
+    var txt=d&&!d.error&&d.recommendation
+      ?'🩺 **AI: '+(d.condition||'Review')+'**\n\n'+d.recommendation
+      :(match(text)||'I have noted your concern. Please consult a medical professional for personalized advice.');
+    var am={role:'ai',content:txt,time:new Date().toISOString()};
+    hist.push(am); save(hist); addMsg(am);
+  })
+  .catch(function(){/* timeout handler will fire */});
+}
+
+window.go=send;
+$snd.addEventListener('click',function(){send($txt.value);});
+$txt.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send($txt.value);}});
+$txt.addEventListener('input',function(){$txt.style.height='auto';$txt.style.height=Math.min($txt.scrollHeight,110)+'px';});
+$clr.addEventListener('click',function(){
+  if(!confirm('Clear chat history?'))return;
+  localStorage.removeItem(K);
+  $msgs.innerHTML=''; hist.length=0;
+  var w={role:'ai',content:'Chat cleared! How can I help you today?',time:new Date().toISOString()};
+  hist.push(w); save(hist); addMsg(w);
+});
+})();
+</script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item ">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>
