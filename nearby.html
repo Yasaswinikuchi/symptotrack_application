@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nearby Care - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        /* ── Header ── */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+        .brand-subtitle {
+            font-size: 13px;
+            color: #38BDF8;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        /* ── Location Search & Actions Bar ── */
+        .location-controls-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-input-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 10px 14px;
+        }
+
+        .search-input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .search-input-box input::placeholder {
+            color: #94A3B8;
+        }
+
+        .btn-search {
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-gps {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        /* ── Map & Hospital View Split Layout ── */
+        .nearby-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .nearby-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Leaflet Map Frame */
+        .map-frame-card {
+            background: rgba(19, 28, 49, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 480px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .map-status-pill {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #38BDF8;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Hospital Cards List Panel */
+        .hospital-list-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .hospital-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .hospital-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .hospital-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .hospital-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+
+        .hospital-type {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+        }
+
+        .rating-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: #F59E0B;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .hospital-meta-row {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #CBD5E1;
+            margin-bottom: 14px;
+        }
+
+        .btn-book-hospital {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-book-hospital:hover {
+            background: #1D4ED8;
+        }
+
+        /* ── Booking Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #0F172A;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            color: #FFFFFF;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            color: #FFFFFF;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 14px;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 9999;
+            padding: 0 12px;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            height: 100%;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #3B82F6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <div>
+                <div class="brand-subtitle">Nearby Healthcare</div>
+                <div class="header-title">Find Clinics & Hospitals</div>
+            </div>
+            <a href="dashboard.html" style="color: #94A3B8; text-decoration: none; font-size: 13px; font-weight: 700;">✕ Close</a>
+        </header>
+
+        <!-- Location Search & GPS Controls -->
+        <div class="location-controls-card">
+            <div class="search-input-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" id="locationSearch" placeholder="Search city or area (e.g. Hyderabad)...">
+            </div>
+            <button class="btn-search" id="btnSearchLocation">Search</button>
+            <button class="btn-gps" onclick="useCurrentGPS()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/></svg>
+                GPS
+            </button>
+        </div>
+
+        <!-- Split View Layout -->
+        <div class="nearby-layout">
+            <!-- Map Container -->
+            <div class="map-frame-card">
+                <div id="map"></div>
+                <div class="map-status-pill" id="loadingText">📍 Tap map to set location</div>
+            </div>
+
+            <!-- Hospitals List Panel -->
+            <div class="hospital-list-panel" id="hospitalList">
+                <!-- Dynamic cards injected via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px;" id="modalHospitalName">Book Appointment</h3>
+            
+            <label style="display:block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Describe Symptoms / Reason</label>
+            <textarea id="bookingProblem" class="modal-input" rows="3" placeholder="E.g. Fever, cough for 2 days..."></textarea>
+
+            <label style="display:block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Date</label>
+            <input type="date" id="bookingDate" class="modal-input">
+
+            <label style="display:block; font-size: 12px; font-weight: 700; color: #94A3B8; margin-bottom: 6px;">Time Slot</label>
+            <select id="bookingTimeSlot" class="modal-input">
+                <option value="" disabled selected>Select a time slot</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:30 AM">11:30 AM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="04:30 PM">04:30 PM</option>
+            </select>
+
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                <button onclick="closeBookingModal()" style="flex:1; background:rgba(255,255,255,0.08); color:#FFF; border:none; padding:12px; border-radius:12px; font-weight:800; cursor:pointer;">Cancel</button>
+                <button onclick="proceedToPay()" id="btnProceedPay" style="flex:1; background:#2563EB; color:#FFF; border:none; padding:12px; border-radius:12px; font-weight:800; cursor:pointer;">Proceed to Pay (₹500)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="nearby.js"></script>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>

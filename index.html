@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="SymptoTrack Pro - AI-Powered Symptom Analysis & Smart Health Telemetry Platform.">
+    <title>SymptoTrack Pro - Smart AI Health Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ── Top Navbar ── */
+        .landing-nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .text-sympto { color: #FFFFFF; }
+        .text-track { color: #38BDF8; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link-item {
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .nav-link-item:hover {
+            color: #38BDF8;
+        }
+
+        .btn-nav-login {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            padding: 12px 24px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-nav-login:hover {
+            background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+            transform: translateY(-1px);
+        }
+
+        /* ── Hero Section ── */
+        .hero-section {
+            max-width: 1100px;
+            margin: 40px auto 60px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #38BDF8;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .hero-headline {
+            font-size: 46px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            color: #FFFFFF;
+        }
+
+        .hero-subhead {
+            font-size: 17px;
+            color: #94A3B8;
+            max-width: 680px;
+            margin: 0 auto 36px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta-primary {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFFFFF;
+            padding: 16px 36px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 35px rgba(37, 99, 235, 0.6);
+        }
+
+        .btn-cta-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            padding: 16px 32px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cta-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ── Feature Showcase Grid ── */
+        .features-section {
+            max-width: 1100px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title-large {
+            font-size: 30px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: #94A3B8;
+        }
+
+        .grid-3col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-box {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #38BDF8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            font-size: 26px;
+        }
+
+        .feature-title-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .feature-body-text {
+            font-size: 13.5px;
+            color: #94A3B8;
+            line-height: 1.6;
+        }
+
+        /* ── Security Trust Footer ── */
+        .trust-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px 24px;
+            text-align: center;
+            background: rgba(11, 19, 43, 0.95);
+        }
+
+        .trust-badges {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            color: #64748B;
+            font-size: 12px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <nav class="landing-nav">
+        <a href="index.html" class="brand-logo-group">
+            <div class="brand-logo-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <span class="brand-title">
+                <span class="text-sympto">Sympto</span><span class="text-track">Track</span>
+            </span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#features" class="nav-link-item">Features</a>
+            <a href="plans.html" class="nav-link-item">Plans</a>
+            <a href="heatmap.html" class="nav-link-item">Radar Map</a>
+            <a href="login.html" class="btn-nav-login">LOG IN / SIGN UP</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-badge">
+            <span>✨ AI-Powered Health Telemetry Platform</span>
+        </div>
+        <h1 class="hero-headline">Your Complete Smart Health & Symptom AI Assistant</h1>
+        <p class="hero-subhead">Instant AI Symptom Analysis, Live Clinic Token Queues, Prescription Image Scanning, Voice Intake, and Real-Time Outbreak Radar.</p>
+
+        <div class="hero-cta-group">
+            <a href="login.html" class="btn-cta-primary">LAUNCH APP / LOG IN 🚀</a>
+            <a href="plans.html" class="btn-cta-secondary">VIEW SUBSCRIPTION PLANS</a>
+        </div>
+    </section>
+
+    <!-- Features Showcase -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2 class="section-title-large">Comprehensive Healthcare Features</h2>
+            <p class="section-subtitle">Everything you need to monitor health, triage symptoms, and book clinic visits.</p>
+        </div>
+
+        <div class="grid-3col">
+            <!-- 1. AI Symptom Analysis -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">🩺</div>
+                <h3 class="feature-title-text">AI Symptom Analysis</h3>
+                <p class="feature-body-text">Enter your symptoms and pre-existing condition chips to receive instant risk level triage and condition match percentages.</p>
+            </div>
+
+            <!-- 2. Prescription Scanner -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">📸</div>
+                <h3 class="feature-title-text">Prescription & Lab Scanner</h3>
+                <p class="feature-body-text">Capture live photo evidence using WebRTC camera stream or upload lab reports for AI document parsing.</p>
+            </div>
+
+            <!-- 3. Voice Symptoms -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">🎙️</div>
+                <h3 class="feature-title-text">Voice Symptom Intake</h3>
+                <p class="feature-body-text">Hands-free speech-to-text intake. Speak naturally into your mic to describe how you feel in real time.</p>
+            </div>
+
+            <!-- 4. Clinic Queue Tokens -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">🎟️</div>
+                <h3 class="feature-title-text">Live Clinic Queue Tokens</h3>
+                <p class="feature-body-text">Book hospital consultations online and receive digital queue tokens with live wait-time estimates.</p>
+            </div>
+
+            <!-- 5. Outbreak Radar & Heatmap -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">🗺️</div>
+                <h3 class="feature-title-text">Outbreak Radar & Air Quality</h3>
+                <p class="feature-body-text">Interactive visual heatmap powered by OpenStreetMap GPS showing local flu risk zones and live AQI index.</p>
+            </div>
+
+            <!-- 6. Pill Reminders & Family -->
+            <div class="feature-box">
+                <div class="feature-icon-circle">💊</div>
+                <h3 class="feature-title-text">Pill Reminders & Family Hub</h3>
+                <p class="feature-body-text">Set daily medication schedules, view dosage history, and manage medical profiles for your family.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust & Security Footer -->
+    <footer class="trust-footer">
+        <div class="trust-badges">
+            <span>🛡️ AES-256 ENCRYPTED</span>
+            <span>🔒 HIPAA COMPLIANT ARCHITECTURE</span>
+            <span>⚡ AI TRIAGE ENGINE</span>
+        </div>
+        <p style="font-size: 13px; color: #94A3B8;">© 2026 SymptoTrack. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Family Health Members - SymptoTrack Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Top Header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            margin-top: 8px;
+        }
+
+        .btn-back-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        /* ── Family Member List (Matching Mobile Photo 2) ── */
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .member-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .member-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .member-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .member-info-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .avatar-circle-white {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .avatar-circle-white svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-blue { color: #2563EB; }
+        .icon-purple { color: #8B5CF6; }
+
+        .member-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 3px;
+        }
+
+        .member-details-text {
+            font-size: 13px;
+            color: #94A3B8;
+            font-weight: 500;
+        }
+
+        /* Right Elements */
+        .btn-active-badge {
+            background: #FFFFFF;
+            color: #2563EB;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-settings-gear {
+            background: transparent;
+            border: none;
+            color: #2563EB;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-settings-gear:hover {
+            transform: rotate(30deg);
+        }
+
+        .edit-hint {
+            font-size: 12px;
+            color: #38BDF8;
+            font-weight: 600;
+            margin-top: 4px;
+            padding-left: 60px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ── Bottom Fixed Full-Width Button ── */
+        .btn-add-member {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            transition: background 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-add-member:hover {
+            background: #1D4ED8;
+        }
+
+        /* ── Modal for Adding / Editing ── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-box {
+            background: #0F172A;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 24px;
+            width: 90%;
+            max-width: 440px;
+            max-height: 82vh;
+            overflow-y: auto;
+            color: #FFF;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .modal-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .modal-box::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        .modal-box h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .field input, .field select {
+            width: 100%;
+            background: #1E293B;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #FFF;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #94A3B8;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            flex: 2;
+            padding: 12px;
+            background: #2563EB;
+            border: none;
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 999;
+            padding: 0 12px;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            height: 100%;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #3B82F6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <a href="dashboard.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <h1 class="header-title">Family Health Members</h1>
+        </header>
+
+        <!-- Member List Container (Matching Photo 2) -->
+        <div class="member-list" id="memberList">
+            <!-- Member Card 1 (Self Primary) -->
+            <div class="member-card">
+                <div class="member-card-top">
+                    <div class="member-info-left">
+                        <div class="avatar-circle-white">
+                            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div>
+                            <div class="member-name">Self (Primary)</div>
+                            <div class="member-details-text">Age: 28 • Male • O+ Positive</div>
+                        </div>
+                    </div>
+                    <button class="btn-active-badge">Active</button>
+                </div>
+            </div>
+
+            <!-- Member Card 2 (Yasaswini Kuchi) -->
+            <div class="member-card" onclick="editMember(1)">
+                <div class="member-card-top">
+                    <div class="member-info-left">
+                        <div class="avatar-circle-white">
+                            <svg class="icon-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div>
+                            <div class="member-name" id="dispMemberName2">Yasaswini Kuchi (Self)</div>
+                            <div class="member-details-text" id="dispMemberDetails2">Age: — • — • Blood: —</div>
+                        </div>
+                    </div>
+                    <button class="btn-settings-gear">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    </button>
+                </div>
+                <div class="edit-hint">
+                    <span>✏️ Tap anywhere on card to edit</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full-Width Bottom Action Button -->
+        <button class="btn-add-member" onclick="openMemberModal()">
+            + ADD FAMILY MEMBER
+        </button>
+
+    </div>
+
+    <!-- Modal for Adding / Editing Member -->
+    <div class="modal" id="memberModal">
+        <div class="modal-box">
+            <h2 id="modalTitle">Add Family Member</h2>
+            <div class="field">
+                <label>Full Name *</label>
+                <input type="text" id="memName" placeholder="e.g. Yasaswini Kuchi">
+            </div>
+            <div class="field">
+                <label>Age</label>
+                <input type="number" id="memAge" placeholder="25">
+            </div>
+            <div class="field">
+                <label>Gender</label>
+                <select id="memGender">
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Blood Group</label>
+                <select id="memBlood">
+                    <option value="B+ Positive">B+ Positive</option>
+                    <option value="O+ Positive">O+ Positive</option>
+                    <option value="A+ Positive">A+ Positive</option>
+                    <option value="AB+ Positive">AB+ Positive</option>
+                    <option value="O- Negative">O- Negative</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Relationship</label>
+                <select id="memRelation">
+                    <option value="Self">Self</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Child">Child</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Sibling">Sibling</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Pre-existing Conditions & Allergies</label>
+                <input type="text" id="memConditions" placeholder="e.g. Asthma, Dust Allergy, Diabetes, None">
+            </div>
+            <div class="field">
+                <label>Emergency Contact Phone</label>
+                <input type="tel" id="memPhone" placeholder="e.g. +91-9876543210">
+            </div>
+            <div class="field">
+                <label>Daily Medications</label>
+                <input type="text" id="memMeds" placeholder="e.g. Vitamin D3, Paracetamol 650mg">
+            </div>
+            <div class="field">
+                <label>Health Score / Vitals Status</label>
+                <select id="memHealthScore">
+                    <option value="95% Excellent">95% Excellent 🟢</option>
+                    <option value="85% Good">85% Good 🟢</option>
+                    <option value="70% Moderate Triage">70% Moderate Triage 🟡</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button class="btn-cancel" onclick="closeMemberModal()">Cancel</button>
+                <button class="btn-save" onclick="saveFamilyMember()">Save Member</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script src="family.js"></script>
+</body>
+</html>

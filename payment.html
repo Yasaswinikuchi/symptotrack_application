@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Payment Gateway - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #F0FDFA 0%, #F8FAFC 50%, #EFF6FF 100%);
+            color: #111827;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            margin-top: 10px;
+        }
+
+        .btn-back {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            color: #111827;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        .btn-back:hover {
+            background: #F1F5F9;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.3px;
+        }
+
+        .glass-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            color: #111827;
+        }
+
+        /* Live Credit Card Interactive Preview */
+        .credit-card-preview {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #1D4ED8 100%);
+            border-radius: 18px;
+            padding: 20px;
+            color: #FFF;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-chip {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #F59E0B, #FBBF24);
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .card-num-display {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .card-holder-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #93C5FD;
+        }
+
+        .card-holder-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFF;
+            margin-top: 2px;
+            letter-spacing: 0px;
+        }
+
+        /* Order Summary Row */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 13px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Payment Tabs */
+        .pay-tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .pay-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #9CA3AF;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pay-tab.active {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFF;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #9CA3AF;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #F8FAFC !important;
+            border: 1px solid #CBD5E1 !important;
+            border-radius: 14px !important;
+            padding: 14px 16px !important;
+            color: #0F172A !important;
+            -webkit-text-fill-color: #0F172A !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            outline: none !important;
+            box-sizing: border-box !important;
+            margin-bottom: 14px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+        }
+
+        .btn-pay-now {
+            width: 100%;
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: #FFF;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            margin-top: 10px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-pay-now:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6);
+        }
+
+        /* 3D Secure Bank OTP Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 15, 23, 0.92);
+            backdrop-filter: blur(20px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #0F172A;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        .upi-app-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 12px;
+            color: #FFF;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upi-app-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3B82F6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- ── Header ── -->
+        <header class="app-header">
+            <a href="dashboard.html" class="btn-back">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <div>
+                <div style="font-size:11px; font-weight:800; color:#38BDF8; letter-spacing:0.5px; text-transform:uppercase;">Razorpay Secure Gateway</div>
+                <div class="header-title">Checkout & Payment 🔒</div>
+            </div>
+        </header>
+
+        <!-- ── Order Summary Card ── -->
+        <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-size:12px; font-weight:800; color:#3B82F6; letter-spacing:0.5px; text-transform:uppercase;">Order Details</div>
+                <span style="background:rgba(34,197,94,0.15); border:1px solid #22C55E; color:#4ADE80; font-size:11px; font-weight:800; padding:4px 10px; border-radius:12px;">SSL Encrypted 256-Bit</span>
+            </div>
+            
+            <div class="summary-row">
+                <span style="color:#9CA3AF;">Item Description</span>
+                <strong style="color:#FFF;" id="summaryHospital">Metro City General Hospital - Token Fee</strong>
+            </div>
+
+            <div class="summary-row">
+                <span style="color:#9CA3AF;">Customer Name</span>
+                <span style="color:#FFF;" id="summaryCustomer">Yasaswini Kuchi</span>
+            </div>
+
+            <div class="summary-row">
+                <span style="color:#9CA3AF;">Queue Token / Category</span>
+                <span style="color:#38BDF8; font-weight:800;" id="summaryToken">Live Priority Token #18</span>
+            </div>
+
+            <div class="summary-row" style="margin-top:8px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.12);">
+                <span style="font-weight:800; font-size:15px; color:#FFF;">Total Payable</span>
+                <span style="font-weight:800; font-size:22px; color:#00F0FF;" id="summaryTotal">₹500</span>
+            </div>
+        </div>
+
+        <!-- ── Payment Method Card ── -->
+        <div class="glass-card">
+            <div class="pay-tabs">
+                <div class="pay-tab active" onclick="switchPayTab('card', this)">💳 Card</div>
+                <div class="pay-tab" onclick="switchPayTab('upi', this)">📱 UPI / QR</div>
+                <div class="pay-tab" onclick="switchPayTab('netbank', this)">🏦 NetBanking</div>
+            </div>
+
+            <!-- Card Payment Mode -->
+            <div id="tabCardView">
+                <!-- Interactive Credit Card Graphic -->
+                <div class="credit-card-preview">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="card-chip"></div>
+                        <span style="font-weight:800; font-size:14px; font-style:italic;">VISA / MasterCard</span>
+                    </div>
+                    <div class="card-num-display" id="cardDisplayNum">4532 8812 9012 3456</div>
+                    <div class="card-holder-row">
+                        <div>
+                            <div>CARDHOLDER</div>
+                            <div class="card-holder-name" id="cardDisplayName">YASASWINI KUCHI</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div>EXPIRES</div>
+                            <div class="card-holder-name" id="cardDisplayExp">12/28</div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="form-label">Card Number</label>
+                <input type="text" class="form-input" id="inputCardNum" placeholder="4532 8812 9012 3456" value="4532 8812 9012 3456" oninput="updateCardPreview()">
+
+                <div style="display:flex; gap:12px;">
+                    <div style="flex:1;">
+                        <label class="form-label">Expiry Date</label>
+                        <input type="text" class="form-input" id="inputCardExp" placeholder="MM/YY" value="12/28" oninput="updateCardPreview()">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="form-label">CVV</label>
+                        <input type="password" class="form-input" id="inputCardCvv" placeholder="123" value="888" maxlength="4">
+                    </div>
+                </div>
+
+                <label class="form-label">Cardholder Name</label>
+                <input type="text" class="form-input" id="inputCardName" placeholder="Yasaswini Kuchi" value="Yasaswini Kuchi" oninput="updateCardPreview()">
+            </div>
+
+            <!-- UPI Payment Mode -->
+            <div id="tabUpiView" style="display:none; text-align:center;">
+                <div style="background:#FFF; padding:16px; border-radius:20px; width:170px; margin:0 auto 16px; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=symtotrack@upi&pn=SymptoTrackPro&am=500" style="width:100%; height:auto;" alt="UPI QR Code">
+                </div>
+                <p style="font-size:12px; color:#9CA3AF; margin-bottom:16px;">Scan QR code using GPay, PhonePe, Paytm or BHIM</p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                    <div class="upi-app-btn" onclick="payViaUPIApp('GPay')">🟢 Google Pay</div>
+                    <div class="upi-app-btn" onclick="payViaUPIApp('PhonePe')">🟣 PhonePe</div>
+                    <div class="upi-app-btn" onclick="payViaUPIApp('Paytm')">🔵 Paytm UPI</div>
+                    <div class="upi-app-btn" onclick="payViaUPIApp('BHIM')">🟠 BHIM UPI</div>
+                </div>
+
+                <label class="form-label" style="text-align:left;">VPA / Virtual UPI ID</label>
+                <input type="text" class="form-input" id="upiIdInput" placeholder="yasaswini@upi" value="yasaswini@upi">
+            </div>
+
+            <!-- NetBanking Mode -->
+            <div id="tabNetView" style="display:none;">
+                <label class="form-label">Select Your Bank</label>
+                <select class="form-input" id="bankSelect" style="background:#111827 !important; color:#00F0FF !important;">
+                    <option value="HDFC">HDFC Bank NetBanking</option>
+                    <option value="ICICI">ICICI Bank Retail</option>
+                    <option value="SBI">State Bank of India (SBI)</option>
+                    <option value="AXIS">Axis Bank Internet Banking</option>
+                    <option value="KOTAK">Kotak Mahindra Bank</option>
+                </select>
+            </div>
+
+            <button class="btn-pay-now" id="btnPayNow" onclick="openBankOTPModal()">
+                <span>PAY SECURELY NOW</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ── Bank 3D Secure Verification Modal ── -->
+    <div class="modal-overlay" id="bankOtpModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <strong style="color:#FFF; font-size:15px;">3D Secure Banking Verification</strong>
+                </div>
+                <span style="color:#9CA3AF; font-size:12px;">Verified by VISA</span>
+            </div>
+
+            <p style="color:#9CA3AF; font-size:13px; margin-bottom:16px;">An OTP authentication code has been sent to your bank-registered mobile number ending in **8921.</p>
+
+            <div class="form-group">
+                <label class="form-label" style="text-align:left;">Bank Security OTP</label>
+                <input type="text" class="form-input" id="bankOtpInput" placeholder="Enter 6-digit Bank OTP" value="982104" style="text-align:center; letter-spacing:4px; font-size:20px !important;">
+            </div>
+
+            <button onclick="executePayment()" id="btnConfirmBankOtp" style="width:100%; background:linear-gradient(135deg, #22C55E, #16A34A); color:#FFF; border:none; padding:15px; border-radius:14px; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 6px 20px rgba(34,197,94,0.4);">
+                Authorize Payment ➔
+            </button>
+
+            <div style="text-align:center; margin-top:12px;">
+                <button onclick="document.getElementById('bankOtpModal').style.display='none'" style="background:none; border:none; color:#64748B; font-weight:700; cursor:pointer;">Cancel Transaction</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Payment Success Overlay ── -->
+    <div class="modal-overlay" id="successOverlay">
+        <div class="modal-card" style="border-color:#22C55E; box-shadow:0 0 50px rgba(34,197,94,0.3);">
+            <div style="width:68px; height:68px; background:rgba(34,197,94,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; border:2px solid #22C55E; color:#22C55E; font-size:34px; font-weight:800;">
+                ✓
+            </div>
+            <h2 style="font-size:24px; font-weight:800; color:#4ADE80; margin-bottom:6px;">Payment Successful!</h2>
+            <p style="font-size:13px; color:#9CA3AF; margin-bottom:20px;">Your transaction has been processed securely.</p>
+            
+            <div style="background:rgba(255,255,255,0.06); border-radius:16px; padding:16px; margin-bottom:20px; text-align:left; font-size:13px; color:#FFF; border:1px solid rgba(255,255,255,0.08);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="color:#9CA3AF;">Live Queue Token:</span>
+                    <strong style="color:#38BDF8; font-size:18px;" id="receiptTokenDisplay">#18</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="color:#9CA3AF;">Amount Paid:</span>
+                    <strong style="color:#4ADE80; font-size:16px;" id="receiptAmountDisplay">₹500</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#9CA3AF;">Transaction ID:</span>
+                    <span style="font-family:monospace; color:#A855F7; font-weight:700;" id="txnIdDisplay">TXN-892104</span>
+                </div>
+            </div>
+
+            <button onclick="goToDashboard()" style="width:100%; background:linear-gradient(135deg, #2563EB, #1D4ED8); color:#FFF; border:none; padding:16px; border-radius:14px; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 6px 20px rgba(37,99,235,0.4); margin-bottom:10px;">
+                Return to Dashboard ➔
+            </button>
+
+            <button onclick="window.print()" style="width:100%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#FFF; padding:12px; border-radius:14px; font-weight:700; font-size:13px; cursor:pointer;">
+                📄 Download / Print Invoice Receipt
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Mobile App Bottom Navigation Bar ── -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script src="payment.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Outbreak Radar & Air Quality - SymptoTrack Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        /* ── Top Header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            margin-top: 8px;
+        }
+
+        .btn-back-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        /* ── City Search Row ── */
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .search-input-wrapper input::placeholder {
+            color: #94A3B8;
+        }
+
+        .btn-search-blue {
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-search-blue:hover {
+            background: #1D4ED8;
+        }
+
+        /* ── GPS Button ── */
+        .btn-gps-full {
+            width: 100%;
+            background: rgba(30, 41, 64, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #38BDF8;
+            padding: 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-gps-full:hover {
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        /* ── Heatmap Container ── */
+        .heatmap-card {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            background: rgba(19, 28, 49, 0.85);
+        }
+
+        .heatmap-card-bar {
+            background: rgba(19, 28, 49, 0.95);
+            padding: 12px 16px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #38BDF8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        #heatmapMap {
+            height: 260px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* ── Outbreak Risk Card ── */
+        .risk-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .city-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .risk-level-badge {
+            background: #FFFFFF;
+            color: #D97706;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .risk-desc {
+            font-size: 13px;
+            color: #94A3B8;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* ── Real-Time Stats Grid (2 Cards) ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card-title {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-val {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .val-orange { color: #F97316; }
+        .val-blue-bright { color: #38BDF8; }
+
+        .stat-card-sub {
+            font-size: 11px;
+            color: #64748B;
+            font-weight: 600;
+        }
+
+        /* ── Recommended Action Plan Section ── */
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 14px;
+            letter-spacing: -0.3px;
+        }
+
+        .action-plan-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #E2E8F0;
+            line-height: 1.5;
+        }
+
+        .action-emoji {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 9999;
+            padding: 0 12px;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            height: 100%;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #3B82F6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <a href="dashboard.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <div class="header-title">Outbreak Radar & Air Quality</div>
+        </header>
+
+        <!-- Search Row -->
+        <div class="search-row">
+            <div class="search-input-wrapper">
+                <input type="text" id="citySearchInput" placeholder="Search city e.g. London, Mumbai..." value="Palanjur">
+            </div>
+            <button class="btn-search-blue" onclick="performCitySearch()">SEARCH</button>
+        </div>
+
+        <!-- GPS Button -->
+        <button class="btn-gps-full" onclick="locateCurrentGPS()">
+            📍 USE CURRENT GPS LOCATION
+        </button>
+
+        <!-- Interactive Visual Heatmap Container -->
+        <div class="heatmap-card">
+            <div class="heatmap-card-bar">
+                <span>🗺️ Live GPS Heatmap & Outbreak Zone</span>
+                <span id="gpsCoordText" style="font-size: 11px; color: #94A3B8; font-weight: 600;">GPS: 13.0382° N, 80.0483° E</span>
+            </div>
+            <div id="heatmapMap"></div>
+        </div>
+
+        <!-- Risk Card -->
+        <div class="risk-card">
+            <div class="risk-card-header">
+                <div class="city-name" id="displayCity">Palanjur</div>
+                <div class="risk-level-badge" id="displayRiskBadge">
+                    Moderate Risk ⚠️
+                </div>
+            </div>
+            <div class="risk-desc" id="displayRiskDesc">
+                Influenza B & Air Quality alert active in Palanjur radius.
+            </div>
+        </div>
+
+        <!-- Real-Time Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-title">AQI Index</div>
+                <div class="stat-card-val val-orange" id="displayAqi">108</div>
+                <div class="stat-card-sub" id="displayAqiStatus">Moderate Pollution</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-title">Flu Outbreak</div>
+                <div class="stat-card-val val-blue-bright" id="displayFlu">+6%</div>
+                <div class="stat-card-sub">Cases this week</div>
+            </div>
+        </div>
+
+        <!-- Recommended Action Plan -->
+        <h2 class="section-title">Recommended Action Plan</h2>
+
+        <div class="action-plan-card">
+            <div class="action-item">
+                <span class="action-emoji">😷</span>
+                <span>Wear N95 Mask outdoors during high AQI hours</span>
+            </div>
+            <div class="action-item">
+                <span class="action-emoji">💧</span>
+                <span>Maintain 2.5L daily hydration to support mucous immunity</span>
+            </div>
+            <div class="action-item">
+                <span class="action-emoji">🏥</span>
+                <span>Check live hospital wait time before in-person visit</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map = null;
+        let heatmapCircle = null;
+        let gpsMarker = null;
+
+        function initHeatmap(lat, lon, cityName, aqi) {
+            document.getElementById('gpsCoordText').innerText = `GPS: ${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
+
+            if (!map) {
+                map = L.map('heatmapMap', { zoomControl: true }).setView([lat, lon], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+            } else {
+                map.setView([lat, lon], 13);
+            }
+
+            // Invalidate size for proper rendering
+            setTimeout(() => { map.invalidateSize(); }, 200);
+
+            if (heatmapCircle) map.removeLayer(heatmapCircle);
+            if (gpsMarker) map.removeLayer(gpsMarker);
+
+            // Draw Red/Orange Outbreak Risk Circle
+            const circleColor = aqi > 120 ? '#EF4444' : '#F97316';
+            heatmapCircle = L.circle([lat, lon], {
+                color: circleColor,
+                fillColor: circleColor,
+                fillOpacity: 0.35,
+                radius: 2500
+            }).addTo(map);
+
+            // GPS Pin Marker
+            gpsMarker = L.marker([lat, lon]).addTo(map)
+                .bindPopup(`<b>📍 ${cityName}</b><br>AQI: ${aqi} • Outbreak Risk Active`)
+                .openPopup();
+        }
+
+        function updateOutbreakData(cityName, aqi, fluRate, riskText, lat, lon) {
+            document.getElementById('displayCity').innerText = cityName;
+            document.getElementById('displayAqi').innerText = aqi;
+            document.getElementById('displayFlu').innerText = fluRate;
+            
+            let statusText = "Moderate Pollution";
+            if (aqi < 50) statusText = "Good Air Quality";
+            else if (aqi > 150) statusText = "Unhealthy Pollution";
+            document.getElementById('displayAqiStatus').innerText = statusText;
+
+            document.getElementById('displayRiskDesc').innerText = `${riskText || 'Influenza B & Air Quality alert active'} in ${cityName} radius.`;
+
+            if (lat && lon) {
+                initHeatmap(lat, lon, cityName, aqi);
+            }
+        }
+
+        function extractExactAreaName(address) {
+            if (!address) return "Palanjur, Chennai";
+            const subArea = address.suburb 
+                || address.neighbourhood 
+                || address.village 
+                || address.town 
+                || address.hamlet 
+                || address.residential 
+                || address.road 
+                || address.city_district 
+                || "";
+            const mainCity = address.city || address.county || address.state || "";
+            
+            if (subArea && mainCity && subArea !== mainCity) {
+                return `${subArea}, ${mainCity}`;
+            }
+            return subArea || mainCity || "Palanjur, Chennai";
+        }
+
+        function performCitySearch() {
+            const input = document.getElementById('citySearchInput').value.trim();
+            if (!input) return;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const cityName = data[0].display_name.split(',')[0];
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        const randomAqi = Math.floor(Math.random() * 60) + 85;
+                        const randomFlu = "+" + (Math.floor(Math.random() * 8) + 2) + "%";
+                        updateOutbreakData(cityName, randomAqi, randomFlu, "Air Quality & Seasonal Flu alert", lat, lon);
+                    } else {
+                        updateOutbreakData(input, 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
+                    }
+                })
+                .catch(() => {
+                    updateOutbreakData(input, 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
+                });
+        }
+
+        function locateCurrentGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                            .then(r => r.json())
+                            .then(data => {
+                                const exactArea = extractExactAreaName(data.address);
+                                document.getElementById('citySearchInput').value = exactArea;
+                                updateOutbreakData(exactArea, 96, "+4%", "Live GPS location alert", lat, lon);
+                            })
+                            .catch(() => {
+                                updateOutbreakData("Palanjur, Chennai", 108, "+6%", "Influenza B & Air Quality alert", lat, lon);
+                            });
+                    },
+                    () => {
+                        // Fallback default Palanjur / Chennai GPS
+                        updateOutbreakData("Palanjur, Chennai", 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
+                    }
+                );
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            locateCurrentGPS();
+        });
+    </script>
+</body>
+</html>
