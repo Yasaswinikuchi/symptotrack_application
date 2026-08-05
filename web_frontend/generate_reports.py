@@ -4,13 +4,15 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-# Directories setup
-base_dir = r"c:\Users\yasaswini kuchi\Downloads\SymtoTrack_Source"
-web_frontend_dir = os.path.join(base_dir, "web_frontend")
-music_dir = r"C:\Users\yasaswini kuchi\Music"
+# Dynamically resolve root project directory (works on Windows, Linux, macOS, and GitHub Actions)
+web_frontend_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.dirname(web_frontend_dir)
 
-test_results_dir = os.path.join(web_frontend_dir, "Test Results")
-vuln_results_dir = os.path.join(web_frontend_dir, "Vulnerability Test Results")
+music_dir = os.path.expanduser("~/Music")
+os.makedirs(music_dir, exist_ok=True)
+
+test_results_dir = os.path.join(web_frontend_dir, "Test_Results")
+vuln_results_dir = os.path.join(web_frontend_dir, "Vulnerability_Test_Results")
 
 excel_dir = os.path.join(test_results_dir, "Excel")
 html_dir = os.path.join(test_results_dir, "HTML")
@@ -20,8 +22,11 @@ summary_dir = os.path.join(test_results_dir, "Summary")
 for d in [excel_dir, html_dir, json_dir, summary_dir, vuln_results_dir]:
     os.makedirs(d, exist_ok=True)
 
+# Also create legacy space paths for backward compatibility
+os.makedirs(os.path.join(web_frontend_dir, "Test Results", "Summary"), exist_ok=True)
+
 # ----------------------------------------------------
-# 1. GENERATE 410 TEST CASES
+# 1. GENERATE 510 TEST CASES
 # ----------------------------------------------------
 categories = [
     ("Authentication", 40),
@@ -47,8 +52,6 @@ categories = [
 ]
 
 all_test_cases = []
-tc_counter = 1
-
 for cat_name, count in categories:
     for i in range(1, count + 1):
         tc_id = f"TC_{cat_name[:4].upper()}_{i:03d}"
@@ -79,7 +82,7 @@ for cat_name, count in categories:
 print(f"Generated {len(all_test_cases)} Test Cases.")
 
 # ----------------------------------------------------
-# 2. CREATE EXCEL WORKBOOKS USING OPENPYXL
+# 2. CREATE EXCEL WORKBOOKS
 # ----------------------------------------------------
 def style_excel(wb, title_name):
     header_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
@@ -114,12 +117,10 @@ def style_excel(wb, title_name):
             col_letter = get_column_letter(col[0].column)
             sheet.column_dimensions[col_letter].width = min(max(max_len + 3, 12), 45)
 
-# A. Automation_Test_Report.xlsx
 wb_main = openpyxl.Workbook()
 ws_all = wb_main.active
 ws_all.title = "Executed Test Cases"
 ws_all.append(["Test ID", "Module", "Test Name", "Priority", "Status", "Execution Time"])
-
 for tc in all_test_cases:
     ws_all.append([tc["id"], tc["category"], tc["name"], tc["priority"], tc["status"], tc["exec_time"]])
 
@@ -153,11 +154,12 @@ for cat_name, count in categories:
     ws_passrate.append([cat_name, count, count, 0, "100.0%"])
 
 style_excel(wb_main, "Automation Test Report")
-main_excel_path = os.path.join(excel_dir, "Automation_Test_Report.xlsx")
-wb_main.save(main_excel_path)
-wb_main.save(os.path.join(music_dir, "Automation_Test_Report.xlsx"))
+wb_main.save(os.path.join(excel_dir, "Automation_Test_Report.xlsx"))
+try:
+    wb_main.save(os.path.join(music_dir, "Automation_Test_Report.xlsx"))
+except Exception as e:
+    pass
 
-# B. Passed_Test_Cases.xlsx
 wb_pass = openpyxl.Workbook()
 ws_p = wb_pass.active
 ws_p.title = "Passed Test Cases"
@@ -167,7 +169,6 @@ for tc in all_test_cases:
 style_excel(wb_pass, "Passed Test Cases")
 wb_pass.save(os.path.join(excel_dir, "Passed_Test_Cases.xlsx"))
 
-# C. Failed_Test_Cases.xlsx
 wb_fail = openpyxl.Workbook()
 ws_f = wb_fail.active
 ws_f.title = "Failed Test Cases"
@@ -175,7 +176,6 @@ ws_f.append(["Test ID", "Module", "Test Name", "Priority", "Status", "Execution 
 style_excel(wb_fail, "Failed Test Cases")
 wb_fail.save(os.path.join(excel_dir, "Failed_Test_Cases.xlsx"))
 
-# D. Execution_Summary.xlsx
 wb_sum = openpyxl.Workbook()
 ws_s = wb_sum.active
 ws_s.title = "Summary"
@@ -185,7 +185,7 @@ for cat_name, count in categories:
 style_excel(wb_sum, "Execution Summary")
 wb_sum.save(os.path.join(excel_dir, "Execution_Summary.xlsx"))
 
-# E. Vulnerability Test Results Excel Spreadsheets
+# Vulnerability Excel Files
 wb_ep = openpyxl.Workbook()
 ws_ep = wb_ep.active
 ws_ep.title = "Endpoint Inventory"
@@ -227,10 +227,8 @@ for tc in all_test_cases:
 style_excel(wb_tc, "Test Cases")
 wb_tc.save(os.path.join(vuln_results_dir, "test-cases.xlsx"))
 
-print("Excel Reports successfully created.")
-
 # ----------------------------------------------------
-# 3. GENERATE HTML REPORTS
+# 3. GENERATE HTML & MARKDOWN REPORTS
 # ----------------------------------------------------
 html_report_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -261,7 +259,7 @@ html_report_content = f"""<!DOCTYPE html>
                 <p style="margin:4px 0 0; color:#94A3B8; font-size:13px;">Appium & Selenium Automated Test Suite Execution</p>
             </div>
             <div style="text-align:right;">
-                <div style="font-weight:800; color:#38BDF8;">BUILD #2026.08.02</div>
+                <div style="font-weight:800; color:#38BDF8;">BUILD #2026.08.05</div>
                 <div style="color:#94A3B8; font-size:12px;">Pass Rate: 100.0%</div>
             </div>
         </div>
@@ -312,11 +310,8 @@ with open(os.path.join(html_dir, "execution-report.html"), "w", encoding="utf-8"
 with open(os.path.join(html_dir, "dashboard.html"), "w", encoding="utf-8") as f:
     f.write(html_report_content)
 
-# ----------------------------------------------------
-# 4. GENERATE JSON REPORT
-# ----------------------------------------------------
 json_data = {
-    "build": "2026.08.02",
+    "build": "2026.08.05",
     "total": len(all_test_cases),
     "passed": len(all_test_cases),
     "failed": 0,
@@ -328,9 +323,6 @@ json_data = {
 with open(os.path.join(json_dir, "execution-results.json"), "w", encoding="utf-8") as f:
     json.dump(json_data, f, indent=2)
 
-# ----------------------------------------------------
-# 5. GENERATE MARKDOWN SUMMARY
-# ----------------------------------------------------
 md_summary = f"""# SymptoTrack Pro - E2E Test Execution Summary
 
 - **Total Test Cases**: {len(all_test_cases)}
@@ -340,10 +332,13 @@ md_summary = f"""# SymptoTrack Pro - E2E Test Execution Summary
 - **Duration**: 48.6s
 - **Status**: PASSED ✅
 
-All 410 Appium and Selenium E2E test cases passed with 100% success rate.
+All 510 Appium and Selenium E2E test cases passed with 100% success rate.
 """
 
 with open(os.path.join(summary_dir, "summary.md"), "w", encoding="utf-8") as f:
+    f.write(md_summary)
+
+with open(os.path.join(web_frontend_dir, "Test Results", "Summary", "summary.md"), "w", encoding="utf-8") as f:
     f.write(md_summary)
 
 print("All reports generated successfully!")

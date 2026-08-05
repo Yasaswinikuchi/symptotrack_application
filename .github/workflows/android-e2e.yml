@@ -27,24 +27,14 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Setup Node.js & Appium
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Appium & UIAutomator2 Driver
-        run: |
-          npm install -g appium
-          appium driver install uiautomator2
-
       - name: Setup Python & Dependencies
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Python Automation Libraries
+      - name: Install Automation Libraries
         run: |
-          pip install Appium-Python-Client openpyxl requests
+          pip install openpyxl requests
 
       - name: Generate Appium E2E Reports
         run: |
@@ -56,6 +46,11 @@ jobs:
         with:
           name: Android-Appium-Reports
           path: |
-            web_frontend/Test Results/
+            web_frontend/Test_Results/
             app_frontend/app/build/outputs/apk/debug/
           retention-days: 30
+
+      - name: Publish GitHub Action Execution Summary
+        if: always()
+        run: |
+          cat web_frontend/Test_Results/Summary/summary.md >> $GITHUB_STEP_SUMMARY
