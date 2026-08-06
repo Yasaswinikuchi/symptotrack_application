@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear any previous stale scan session when opening scan page
+    sessionStorage.removeItem("analysisResult");
+
     const btnTakePhoto = document.getElementById('btnTakePhoto');
     const btnUploadFile = document.getElementById('btnUploadFile');
     const btnAnalyzeImage = document.getElementById('btnAnalyzeImage');
@@ -19,10 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentBase64Image = null;
     let webcamStream = null;
 
-    // Image Validation Helper (Detects black / unreadable images)
+    // Image Validation Helper (Detects black / empty / dark unreadable images)
     const checkImageValidity = (imgElement) => {
         try {
-            if (!imgElement || !imgElement.complete || imgElement.naturalWidth === 0) return true;
+            if (!imgElement || !imgElement.complete || imgElement.naturalWidth === 0) return false;
             const canvas = document.createElement('canvas');
             canvas.width = 32;
             canvas.height = 32;
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const avgBrightness = totalBrightness / pixelCount;
             console.log('Image Average Brightness:', avgBrightness);
-            return avgBrightness >= 15; // Rejects pitch black or unreadable images (<15 brightness)
+            return avgBrightness >= 25; // Rejects pitch black or unreadable images (<25 brightness)
         } catch (e) {
             return true;
         }
@@ -186,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Computer Vision Quality & Brightness Check
             if (!checkImageValidity(imagePreview)) {
+                sessionStorage.removeItem("analysisResult");
                 alert('⚠️ Invalid Image: The uploaded image is pitch black or unreadable. Please provide a clear, well-lit photo of the skin area or symptom.');
                 return;
             }
