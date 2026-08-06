@@ -19,6 +19,35 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentBase64Image = null;
     let webcamStream = null;
 
+    // Image Validation Helper (Detects black / unreadable images)
+    const checkImageValidity = (imgElement) => {
+        try {
+            if (!imgElement || !imgElement.complete || imgElement.naturalWidth === 0) return true;
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgElement, 0, 0, 32, 32);
+            const imageData = ctx.getImageData(0, 0, 32, 32);
+            const data = imageData.data;
+            let totalBrightness = 0;
+            let pixelCount = data.length / 4;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                totalBrightness += (r + g + b) / 3;
+            }
+
+            const avgBrightness = totalBrightness / pixelCount;
+            console.log('Image Average Brightness:', avgBrightness);
+            return avgBrightness >= 15; // Rejects pitch black or unreadable images (<15 brightness)
+        } catch (e) {
+            return true;
+        }
+    };
+
     // File loading helper
     const processFile = (file) => {
         if (!file || !file.type.startsWith('image/')) {
@@ -33,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             imagePreview.src = result;
             imagePreview.style.display = 'block';
-            placeholderContent.style.display = 'none';
-            btnAnalyzeImage.disabled = false;
+            if (placeholderContent) placeholderContent.style.display = 'none';
+            if (btnAnalyzeImage) btnAnalyzeImage.disabled = false;
         };
         reader.readAsDataURL(file);
     };
@@ -87,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnTakePhoto.addEventListener('click', async (e) => {
             e.stopPropagation();
             
-            // Trigger live WebRTC camera stream
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     webcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -155,7 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAnalyzeImage) {
         btnAnalyzeImage.addEventListener('click', async () => {
             if (!currentBase64Image) return;
-            
+
+            // Computer Vision Quality & Brightness Check
+            if (!checkImageValidity(imagePreview)) {
+                alert('⚠️ Invalid Image: The uploaded image is pitch black or unreadable. Please provide a clear, well-lit photo of the skin area or symptom.');
+                return;
+            }
+
             btnAnalyzeImage.textContent = 'SCANNING IMAGE WITH AI COMPUTER VISION...';
             btnAnalyzeImage.disabled = true;
 
