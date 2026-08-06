@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Analysis Result - SymptoTrack Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <script>
+        (function() {
+            var raw = sessionStorage.getItem("analysisResult");
+            if (!raw) {
+                location.replace("scan.html");
+            } else {
+                try {
+                    var parsed = JSON.parse(raw);
+                    if (!parsed || !parsed.condition) {
+                        sessionStorage.removeItem("analysisResult");
+                        location.replace("scan.html");
+                    }
+                } catch(e) {
+                    sessionStorage.removeItem("analysisResult");
+                    location.replace("scan.html");
+                }
+            }
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        /* ── Header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            margin-top: 8px;
+        }
+
+        .btn-back-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        /* ── Risk Card ── */
+        .risk-hero-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 28px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-icon-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-icon-circle.moderate {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 2px solid #F59E0B;
+        }
+
+        .risk-icon-circle.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 2px solid #EF4444;
+        }
+
+        .risk-icon-circle.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22C55E;
+            border: 2px solid #22C55E;
+        }
+
+        .risk-tag {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #94A3B8;
+            margin-bottom: 4px;
+        }
+
+        .risk-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .risk-sub {
+            font-size: 13px;
+            color: #94A3B8;
+            line-height: 1.5;
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        /* ── Sections ── */
+        .section-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .condition-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .condition-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .condition-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .match-pill {
+            background: rgba(59, 130, 246, 0.2);
+            color: #38BDF8;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .condition-desc {
+            font-size: 12px;
+            color: #94A3B8;
+            line-height: 1.5;
+        }
+
+        /* Recommendations List */
+        .rec-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .rec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .rec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rec-bullet {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .rec-item-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+
+        .rec-item-desc {
+            font-size: 12px;
+            color: #94A3B8;
+            line-height: 1.4;
+        }
+
+        /* Actions */
+        .btn-find-doctor {
+            width: 100%;
+            background: #2563EB;
+            color: #FFFFFF;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+            margin-bottom: 12px;
+        }
+
+        .btn-back-home {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94A3B8;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="app-header">
+            <a href="symptoms.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <h1 class="header-title">Analysis Result</h1>
+        </header>
+
+        <!-- Risk Level Hero Card -->
+        <div class="risk-hero-card">
+            <div class="risk-icon-circle moderate" id="riskIconCircle">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+            </div>
+            <div class="risk-tag">RISK LEVEL ASSESSMENT</div>
+            <div class="risk-title" id="riskTitle">Moderate Risk ⚠️</div>
+            <div class="risk-sub" id="riskDescription">Based on your reported symptoms, we detected moderate viral / inflammation markers. Medical consultation is advised.</div>
+        </div>
+
+        <!-- Possible Conditions -->
+        <div class="section-label">Possible Conditions</div>
+        <div id="conditionsContainer">
+            <!-- Dynamic Conditions -->
+        </div>
+
+        <!-- Actionable Recommendations -->
+        <div class="section-label">Recommended Action Plan</div>
+        <div class="rec-card" id="recommendationsContainer">
+            <!-- Dynamic Recommendations -->
+        </div>
+
+        <!-- Action Buttons -->
+        <a href="nearby.html" class="btn-find-doctor">+ FIND NEARBY DOCTOR & BOOK TOKEN</a>
+        <a href="dashboard.html" class="btn-back-home">BACK TO DASHBOARD</a>
+    </div>
+
+    <script src="result.js?v=20260806_v101"></script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

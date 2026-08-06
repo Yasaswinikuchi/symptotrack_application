@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="top">
+            
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_hospital_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="City General Hospital"
+                    android:textColor="@color/text_primary_dark"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tv_hospital_specialties"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Specialties: General, Emergency, Cardiology"
+                    android:textColor="@color/brand_blue"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"/>
+
+                <TextView
+                    android:id="@+id/tv_hospital_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="123 Health Ave, Medical District"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edittext"
+                android:backgroundTint="@color/amber_100"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:gravity="center_vertical">
+                
+                <TextView
+                    android:id="@+id/tv_hospital_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.8 ★"
+                    android:textColor="@color/amber_700"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="14dp"
+            android:gravity="center_vertical">
+            
+            <TextView
+                android:id="@+id/tv_wait_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wait: 15 min"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginEnd="16dp"/>
+                
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1.2 km away"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:id="@+id/tv_hospital_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📞 +1 800-555-0199"
+                android:textColor="@color/slate_600"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_book_appointment"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:backgroundTint="@color/primary_blue"
+            android:text="Book Appointment • ₹350"
+            android:textColor="@color/card_white"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+            
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
+
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="32dp">
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Privacy &amp; Security"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary_dark"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:cardCornerRadius="12dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• All medical data and symptom logs are encrypted locally before being stored securely." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• We do not share, sell, or monetize your personal health information under any circumstances." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Your interactions with SymptoTrack's AI are completely anonymous and stripped of personally identifiable information." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Location data is strictly used for finding nearby hospitals and is never logged persistently on our servers." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• You have the right to request deletion of all your data at any time from this device." android:textColor="@color/slate_700"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete_account"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Delete My Account"
+        android:textSize="16sp"
+        android:textColor="@color/card_white"
+        android:backgroundTint="@color/error_red"/>
+
+</LinearLayout>
+
+
+
+

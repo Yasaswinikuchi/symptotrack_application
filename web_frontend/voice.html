@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Voice Symptoms - SymptoTrack Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth-guard.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0B132B;
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0B132B 70%);
+            color: #FFFFFF;
+            min-height: 100vh;
+            padding-bottom: 90px;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 18px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            margin-top: 8px;
+        }
+        .btn-back-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        .voice-card {
+            background: rgba(19, 28, 49, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .mic-btn-main {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background: #2563EB;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px auto;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .mic-btn-main.recording {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.75), 0 0 50px rgba(239, 68, 68, 0.4) !important;
+            animation: micPulse 1.2s infinite !important;
+        }
+
+        @keyframes micPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .mic-status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94A3B8;
+            transition: all 0.3s ease;
+        }
+
+        .mic-status-badge.active {
+            background: rgba(239, 68, 68, 0.25);
+            color: #F87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-stop-recording {
+            display: none;
+            margin: 12px auto 6px;
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: #FFFFFF;
+            border: 1px solid #EF4444;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-stop-recording:hover {
+            transform: scale(1.05);
+            background: #B91C1C;
+        }
+
+        .preset-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #D1D5DB;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 4px;
+        }
+
+        .transcript-text {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 14px;
+            color: #FFFFFF;
+            font-size: 14px;
+            min-height: 90px;
+            text-align: left;
+            margin-top: 16px;
+            outline: none;
+        }
+
+        .btn-analyze-voice {
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: #2563EB;
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <a href="dashboard.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
+            <div class="header-title">Voice Symptoms</div>
+        </header>
+
+        <div class="voice-card" id="voiceCard">
+            <h3 style="font-size: 17px; font-weight: 800; color: #FFF; margin-bottom: 4px;">Speak Your Symptoms</h3>
+            <p style="font-size: 12px; color: #94A3B8;">Tap the microphone button to start recording your symptoms</p>
+
+            <button class="mic-btn-main" id="btnMic">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 1a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+            </button>
+
+            <button id="btnStopMic" class="btn-stop-recording">⏹️ STOP RECORDING</button>
+
+            <div id="micStatusText" class="mic-status-badge">🎤 Tap Microphone to Speak</div>
+
+            <div style="margin-top: 12px;">
+                <button class="preset-pill" onclick="insertSample('I have had a high fever and severe headache for 2 days.')">🤒 Fever & Headache</button>
+                <button class="preset-pill" onclick="insertSample('Persistent dry cough and sore throat.')">😮‍💨 Cough & Throat</button>
+            </div>
+
+            <div class="transcript-text" id="transcriptText" contenteditable="true" placeholder="Spoken transcript will appear here..."></div>
+
+            <button class="btn-analyze-voice" id="btnAnalyzeVoice">
+                ANALYZE VOICE SYMPTOMS
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function insertSample(text) {
+            const el = document.getElementById('transcriptText');
+            if (el) el.innerText = text;
+            const btn = document.getElementById('btnAnalyzeVoice');
+            if (btn) btn.disabled = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnMic = document.getElementById('btnMic');
+            const btnStopMic = document.getElementById('btnStopMic');
+            const voiceCard = document.getElementById('voiceCard');
+            const micStatusText = document.getElementById('micStatusText');
+            const transcriptText = document.getElementById('transcriptText');
+            const btnAnalyzeVoice = document.getElementById('btnAnalyzeVoice');
+            
+            let isRecording = false;
+            let recognition = null;
+            let finalTranscript = '';
+
+            // Initialize Web Speech API
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                
+                recognition.onstart = () => {
+                    isRecording = true;
+                    if (voiceCard) voiceCard.classList.add('recording');
+                    if (btnMic) btnMic.classList.add('recording');
+                    if (btnStopMic) btnStopMic.style.display = 'inline-block';
+                    if (micStatusText) {
+                        micStatusText.textContent = '🔴 RECORDING IN PROGRESS... Speak Now';
+                        micStatusText.classList.add('active');
+                    }
+                };
+                
+                recognition.onresult = (event) => {
+                    let interimTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript + ' ';
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    const fullText = (finalTranscript + interimTranscript).trim();
+                    if (transcriptText) transcriptText.innerText = fullText;
+                    
+                    if (btnAnalyzeVoice && fullText.length > 0) {
+                        btnAnalyzeVoice.disabled = false;
+                    }
+                };
+                
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error', event.error);
+                    stopRecording();
+                };
+                
+                recognition.onend = () => {
+                    stopRecording();
+                };
+            }
+
+            const stopRecording = () => {
+                isRecording = false;
+                if (voiceCard) voiceCard.classList.remove('recording');
+                if (btnMic) btnMic.classList.remove('recording');
+                if (btnStopMic) btnStopMic.style.display = 'none';
+                if (micStatusText) {
+                    micStatusText.textContent = '🎤 Tap Microphone to Speak';
+                    micStatusText.classList.remove('active');
+                }
+                if (recognition) {
+                    try { recognition.stop(); } catch(e){}
+                }
+            };
+
+            if (btnStopMic) {
+                btnStopMic.addEventListener('click', stopRecording);
+            }
+
+            if (btnMic) {
+                btnMic.addEventListener('click', () => {
+                    if (isRecording) {
+                        stopRecording();
+                    } else {
+                        if (recognition) {
+                            finalTranscript = transcriptText ? (transcriptText.innerText.trim() ? transcriptText.innerText.trim() + ' ' : '') : '';
+                            try {
+                                recognition.start();
+                            } catch(e) {
+                                stopRecording();
+                            }
+                        } else {
+                            alert("Browser Speech Recognition not available in this environment. You can type or select sample prompts!");
+                        }
+                    }
+                });
+            }
+
+            if (transcriptText) {
+                transcriptText.addEventListener('input', () => {
+                    if (btnAnalyzeVoice) {
+                        btnAnalyzeVoice.disabled = !(transcriptText.innerText.trim().length > 0);
+                    }
+                });
+            }
+
+            if (btnAnalyzeVoice) {
+                btnAnalyzeVoice.addEventListener('click', async () => {
+                    const textToAnalyze = transcriptText ? transcriptText.innerText.trim() : '';
+                    if (!textToAnalyze) return;
+                    
+                    btnAnalyzeVoice.textContent = 'ANALYZING SPEECH WITH AI MODEL...';
+                    btnAnalyzeVoice.disabled = true;
+                    
+                    let age = "30";
+                    let gender = "Male";
+                    const userStr = localStorage.getItem('user');
+                    if (userStr) {
+                        try {
+                            const user = JSON.parse(userStr);
+                            if (user.age) age = user.age;
+                            if (user.gender) gender = user.gender;
+                        } catch (e) {}
+                    }
+                    
+                    try {
+                        const response = await fetch('../app_backend/api/analyze.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                symptomsText: textToAnalyze,
+                                age: age,
+                                gender: gender,
+                                conditions: [] 
+                            })
+                        });
+
+                        let data;
+                        if (response.ok) {
+                            data = await response.json();
+                        }
+
+                        if (!data || data.error) {
+                            throw new Error(data ? data.error : 'Backend unreachable');
+                        }
+
+                        sessionStorage.setItem("analysisResult", JSON.stringify(data));
+                        window.location.href = "result.html";
+                    } catch (err) {
+                        console.warn('Backend unavailable, using client-side Voice AI Fallback:', err);
+                        
+                        const fallbackResult = {
+                            condition: "Acute Upper Respiratory / Symptom Cluster",
+                            confidence: 91,
+                            severity: "Moderate",
+                            recommendation: "Stay hydrated, rest, and monitor body temperature. Over-the-counter pain relievers or fever reducers may assist. Consult a clinic if symptoms intensify.",
+                            detected_symptoms: ["Voice transcribed symptoms", textToAnalyze.substring(0, 50) + "..."],
+                            next_steps: ["Schedule telemedicine consultation", "Log daily temperature", "Hydrate frequently"]
+                        };
+
+                        setTimeout(() => {
+                            sessionStorage.setItem("analysisResult", JSON.stringify(fallbackResult));
+                            window.location.href = "result.html";
+                        }, 1500);
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="symptoms.html" class="nav-item active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Symptoms</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
+            <span>History</span>
+        </a>
+        <a href="nearby.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Nearby</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>

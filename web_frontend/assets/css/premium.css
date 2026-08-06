@@ -1,0 +1,134 @@
+/* assets/css/premium.css */
+/* Design System */
+:root {
+  --font-primary: 'Inter', sans-serif;
+  --color-primary: hsl(210, 80%, 50%); /* teal-ish */
+  --color-primary-dark: hsl(210, 80%, 40%);
+  --color-accent: hsl(260, 70%, 55%); /* indigo */
+  --color-bg-light: hsl(0, 0%, 98%);
+  --color-bg-dark: hsl(210, 20%, 12%);
+  --color-surface-light: rgba(255,255,255,0.8);
+  --color-surface-dark: rgba(20,20,20,0.8);
+  --color-text-light: hsl(210, 10%, 20%);
+  --color-text-dark: hsl(0, 0%, 90%);
+}
+
+html {
+  font-family: var(--font-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-light);
+  color: var(--color-text-light);
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: var(--color-bg-dark);
+  color: var(--color-text-dark);
+}
+
+/* Glassmorphism container */
+.glass {
+  background: var(--color-surface-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  transition: background 0.3s;
+}
+
+body.dark .glass {
+  background: var(--color-surface-dark);
+}
+
+/* Primary button */
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Dark mode toggle */
+#dark-mode-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 48px;
+  background: var(--color-surface-light);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: background 0.3s;
+}
+
+body.dark #dark-mode-toggle {
+  background: var(--color-surface-dark);
+}
+
+#dark-mode-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--color-primary);
+}
+
+/* Card style */
+.card {
+  background: var(--color-surface-light);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: background 0.3s;
+}
+
+body.dark .card {
+  background: var(--color-surface-dark);
+}
+
+/* Simple fade‑in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Responsive grid for dashboard actions */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Make navigation bar glassy */
+.top-nav {
+  background: var(--color-surface-light);
+  backdrop-filter: blur(8px);
+}
+
+body.dark .top-nav {
+  background: var(--color-surface-dark);
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_blue">#2E6CEB</color>
+    <color name="brand_dark">#111827</color>
+    <color name="background_light">#F4F7F9</color>
+    <color name="card_white">#FFFFFF</color>
+    <color name="input_bg">#F9FAFB</color>
+    <color name="accent_green">#22C55E</color>
+    <color name="accent_orange">#F97316</color>
+    <color name="error_red">#EF4444</color>
+    <!-- Additional UI colors -->
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
+    <color name="border_gray">#E5E7EB</color>
+    <color name="border_light">#E2E8F0</color>
+    <color name="background_dark">#111827</color>
+    <!-- New colours for missing hex values -->
+    <color name="divider_gray">#1E293B</color>
+    <color name="background_light_alt">#EFF6FF</color>
+    <color name="background_error">#FEF2F2</color>
+    <color name="error_red_alt">#DC2626</color>
+    <color name="accent_orange_alt">#F59E0B</color>
+    <color name="accent_purple">#8B5CF6</color>
+    <color name="accent_green_alt">#34D399</color>
+    <color name="accent_cyan">#38BDF8</color>
+    <color name="accent_purple_light">#A78BFA</color>
+    <color name="text_primary_dark">#0F172A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="form_label_gray">#6B7280</color>
+    <color name="splash_background">#F4F7F9</color>
+    <color name="primary_blue">#3B82F6</color>
+    <color name="border_slate">#CBD5E1</color>
+    <color name="warning_orange">#EA580C</color>
+    <color name="slate_600">#475569</color>
+    <color name="slate_700">#334155</color>
+    <color name="slate_100">#F1F5F9</color>
+    <color name="blue_600">#2563EB</color>
+    <color name="slate_400">#94A3B8</color>
+    <color name="blue_300">#93C5FD</color>
+    <color name="emerald_500">#10B981</color>
+    <color name="amber_100">#FEF3C7</color>
+    <color name="amber_700">#B45309</color>
+    <color name="green_600">#16A34A</color>
+    <color name="sky_500">#0EA5E9</color>
+    <color name="red_700">#B91C1C</color>
+</resources>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="32dp">
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Help &amp; Support"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary_dark"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:cardCornerRadius="12dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Medical Emergency? Please call 112 or your local emergency services immediately. SymptoTrack is not a replacement for professional emergency care." android:layout_marginBottom="12dp" android:textColor="@color/slate_700" android:textStyle="bold"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• AI Diagnosis: Our system uses advanced LLMs to map symptoms, but the suggestions are strictly for informational purposes. Always consult a certified physician." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Sync Issues: Ensure you have an active internet connection to scan images, record voice, or fetch hospitals." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Appointments: Booked appointments via Razorpay cannot be refunded automatically. Please contact the hospital directly." android:layout_marginBottom="12dp" android:textColor="@color/slate_700"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="• Have a feature request or found a bug? Drop us an email using the button below!" android:textColor="@color/slate_700"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_contact_help"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Contact Support"
+        android:textSize="16sp"
+        android:textColor="@color/card_white"
+        android:backgroundTint="@color/primary_blue"/>
+
+</LinearLayout>
+
+
+
+
