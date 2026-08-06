@@ -129,13 +129,15 @@
             <div class="header-title">Voice Symptoms</div>
         </header>
 
-        <div class="voice-card">
+        <div class="voice-card" id="voiceCard">
             <h3 style="font-size: 17px; font-weight: 800; color: #FFF; margin-bottom: 4px;">Speak Your Symptoms</h3>
             <p style="font-size: 12px; color: #94A3B8;">Tap the microphone button to start recording your symptoms</p>
 
             <button class="mic-btn-main" id="btnMic">
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 1a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
             </button>
+
+            <div id="micStatusText" class="mic-status-badge">🎤 Tap Microphone to Speak</div>
 
             <div style="margin-top: 12px;">
                 <button class="preset-pill" onclick="insertSample('I have had a high fever and severe headache for 2 days.')">🤒 Fever & Headache</button>
