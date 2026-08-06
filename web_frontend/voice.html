@@ -144,16 +144,19 @@
 
             <div class="transcript-text" id="transcriptText" contenteditable="true" placeholder="Spoken transcript will appear here..."></div>
 
-            <button class="btn-analyze-voice" id="btnAnalyzeVoice" onclick="window.location.href='result.html'">
+            <button class="btn-analyze-voice" id="btnAnalyzeVoice">
                 ANALYZE VOICE SYMPTOMS
             </button>
         </div>
     </div>
 
-    <script src="voice.js"></script>
+    <script src="voice.js?v=20260806_v3"></script>
     <script>
         function insertSample(text) {
-            document.getElementById('transcriptText').innerText = text;
+            const el = document.getElementById('transcriptText');
+            if (el) el.innerText = text;
+            const btn = document.getElementById('btnAnalyzeVoice');
+            if (btn) btn.disabled = false;
         }
     </script>
 
