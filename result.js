@@ -6,21 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try { data = JSON.parse(rawData); } catch(e) {}
     }
 
-    // Default intelligent fallback if data is missing or empty
-    if (!data) {
-        data = {
-            riskLevel: "Moderate Risk",
-            riskDescription: "Based on your reported symptoms, we detected moderate viral / inflammation markers. Medical consultation is advised.",
-            conditions: [
-                { name: "Viral Tension / Seasonal Flu", matchPercentage: "88% Match", description: "Common viral respiratory or tension syndrome requiring rest, fluids, and symptom monitoring." },
-                { name: "Acute Upper Respiratory Infection", matchPercentage: "72% Match", description: "Mild upper respiratory tract inflammation. Usually self-limiting with supportive care." }
-            ],
-            recommendations: [
-                { title: "Stay Hydrated & Rest", description: "Drink 2–3 litres of warm fluids daily and get adequate sleep to boost immunity." },
-                { title: "OTC Symptom Relief", description: "Take fever/pain relievers (e.g. Paracetamol) as advised by your GP." },
-                { title: "Monitor Temperature & Triage", description: "If fever exceeds 101°F or shortness of breath develops, visit a nearby clinic immediately." }
-            ]
-        };
+    // Require valid scan result session data - redirect to scan page if missing or empty
+    if (!data || !data.condition) {
+        console.warn("No active scan result found in session storage. Redirecting to scan page.");
+        sessionStorage.removeItem("analysisResult");
+        window.location.href = "scan.html";
+        return;
     }
 
     // Normalize properties
@@ -58,17 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (condContainer) {
         condContainer.innerHTML = conditionsArr.map(c => `
             <div class="condition-card">
-                <div class="condition-top">
-                    <div class="condition-name">${c.name || 'Possible Symptom Condition'}</div>
-                    <div class="match-pill">${c.matchPercentage || '85% Match'}</div>
+                <div class="cond-header">
+                    <span class="cond-name">${c.name}</span>
+                    <span class="cond-match">${c.matchPercentage}</span>
                 </div>
-                <div class="condition-desc">${c.description || 'Monitored symptom pattern. Please consult a doctor.'}</div>
+                <p class="cond-desc">${c.description}</p>
             </div>
-        `).join('');
+        `).join("");
     }
 
-    // Render Recommendations
-    const recContainer = document.getElementById("recommendationsContainer");
+    // Render Recommended Action Plan
+    const actionListEl = document.getElementById("actionPlanList");
     let recsArr = data.recommendations || [];
 
     if (!recsArr.length && data.next_steps) {
@@ -78,23 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }));
     }
 
-    if (!recsArr.length) {
-        recsArr = [
-            { title: "Stay Hydrated & Rest", description: "Drink 2–3 litres of warm fluids daily and get adequate sleep." },
-            { title: "OTC Symptom Relief", description: "Take fever/pain relievers as advised by your GP." },
-            { title: "Schedule Clinic Consultation", description: "Book a nearby doctor appointment if symptoms persist for 48 hours." }
-        ];
-    }
-
-    if (recContainer) {
-        recContainer.innerHTML = recsArr.map((r, idx) => `
-            <div class="rec-item">
-                <div class="rec-bullet">${idx + 1}</div>
-                <div>
-                    <div class="rec-item-title">${r.title || 'Action Item'}</div>
-                    <div class="rec-item-desc">${r.description || 'Follow standard healthcare guidelines.'}</div>
+    if (actionListEl && recsArr.length) {
+        actionListEl.innerHTML = recsArr.map((r, idx) => `
+            <div class="action-step">
+                <div class="step-badge">${idx + 1}</div>
+                <div class="step-content">
+                    <h4>${r.title}</h4>
+                    <p>${r.description}</p>
                 </div>
             </div>
-        `).join('');
+        `).join("");
     }
 });
