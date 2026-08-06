@@ -182,7 +182,7 @@ function fetchHospitals(lat, lon) {
                                 name: name,
                                 type: type.charAt(0).toUpperCase() + type.slice(1) + ", Emergency Care",
                                 phone: rawPhone,
-                                fee: Math.floor(Math.random() * 500) + 300,
+                                fee: Math.floor(Math.random() * (450 - 250 + 1)) + 250, // Reduced to range ₹250 - ₹450
                                 wait: Math.floor(Math.random() * 20) + 8,
                                 rating: (4.0 + Math.random() * 0.9).toFixed(1),
                                 dist: parseFloat(dist),
@@ -194,12 +194,12 @@ function fetchHospitals(lat, lon) {
 
                     if (realHospitals.length < 4) {
                         const localTemplates = [
-                            { suffix: "General Hospital & Emergency", type: "Emergency, Cardiology, Pediatrics", phone: "+91 44 2829 0200", fee: 500, wait: 12, rating: 4.8, latOff: 0.008, lonOff: 0.005 },
-                            { suffix: "Multi-Specialty Clinic", type: "Neurology, Orthopedics, General", phone: "+91 44 4000 6000", fee: 750, wait: 22, rating: 4.6, latOff: -0.009, lonOff: 0.011 },
-                            { suffix: "Community Medicare & Triage", type: "Maternity, General Medicine", phone: "+91 44 2626 1234", fee: 350, wait: 15, rating: 4.4, latOff: 0.014, lonOff: -0.012 },
-                            { suffix: "Heart & Vascular Specialty", type: "Cardiology, Vascular Surgery", phone: "+91 44 2829 3333", fee: 1200, wait: 8, rating: 4.9, latOff: -0.018, lonOff: -0.015 },
-                            { suffix: "Urgent Care & Diagnostics", type: "Dermatology, ENT, Fever Triage", phone: "+91 44 4545 7777", fee: 400, wait: 18, rating: 4.3, latOff: 0.022, lonOff: 0.019 },
-                            { suffix: "Children & Women's Hospital", type: "Pediatrics, Neonatal Care", phone: "+91 44 2499 8888", fee: 600, wait: 28, rating: 4.7, latOff: -0.025, lonOff: 0.021 }
+                            { suffix: "General Hospital & Emergency", type: "Emergency, Cardiology, Pediatrics", phone: "+91 44 2829 0200", fee: 350, wait: 12, rating: 4.8, latOff: 0.008, lonOff: 0.005 },
+                            { suffix: "Multi-Specialty Clinic", type: "Neurology, Orthopedics, General", phone: "+91 44 4000 6000", fee: 420, wait: 22, rating: 4.6, latOff: -0.009, lonOff: 0.011 },
+                            { suffix: "Community Medicare & Triage", type: "Maternity, General Medicine", phone: "+91 44 2626 1234", fee: 280, wait: 15, rating: 4.4, latOff: 0.014, lonOff: -0.012 },
+                            { suffix: "Heart & Vascular Specialty", type: "Cardiology, Vascular Surgery", phone: "+91 44 2829 3333", fee: 450, wait: 8, rating: 4.9, latOff: -0.018, lonOff: -0.015 },
+                            { suffix: "Urgent Care & Diagnostics", type: "Dermatology, ENT, Fever Triage", phone: "+91 44 4545 7777", fee: 320, wait: 18, rating: 4.3, latOff: 0.022, lonOff: 0.019 },
+                            { suffix: "Children & Women's Hospital", type: "Pediatrics, Neonatal Care", phone: "+91 44 2499 8888", fee: 390, wait: 28, rating: 4.7, latOff: -0.025, lonOff: 0.021 }
                         ];
 
                         localTemplates.forEach((t) => {
@@ -235,11 +235,11 @@ function fetchHospitals(lat, lon) {
 
 function generateLocalHospitalsFallback(areaName, lat, lon) {
     const localTemplates = [
-        { suffix: "General Hospital", type: "Emergency, Cardiology, Pediatrics", phone: "+91 44 2829 0200", fee: 500, wait: 12, rating: 4.8, latOff: 0.008, lonOff: 0.005 },
-        { suffix: "Multi-Specialty Clinic", type: "Neurology, Orthopedics, General", phone: "+91 44 4000 6000", fee: 750, wait: 22, rating: 4.6, latOff: -0.009, lonOff: 0.011 },
-        { suffix: "Community Healthcare", type: "Maternity, General Medicine", phone: "+91 44 2626 1234", fee: 350, wait: 15, rating: 4.4, latOff: 0.014, lonOff: -0.012 },
-        { suffix: "Heart & Vascular Center", type: "Cardiology, Vascular Surgery", phone: "+91 44 2829 3333", fee: 1200, wait: 8, rating: 4.9, latOff: -0.018, lonOff: -0.015 },
-        { suffix: "Urgent Care Clinic", type: "Dermatology, ENT, Fever Triage", phone: "+91 44 4545 7777", fee: 400, wait: 18, rating: 4.3, latOff: 0.022, lonOff: 0.019 }
+        { suffix: "General Hospital", type: "Emergency, Cardiology, Pediatrics", phone: "+91 44 2829 0200", fee: 350, wait: 12, rating: 4.8, latOff: 0.008, lonOff: 0.005 },
+        { suffix: "Multi-Specialty Clinic", type: "Neurology, Orthopedics, General", phone: "+91 44 4000 6000", fee: 420, wait: 22, rating: 4.6, latOff: -0.009, lonOff: 0.011 },
+        { suffix: "Community Healthcare", type: "Maternity, General Medicine", phone: "+91 44 2626 1234", fee: 280, wait: 15, rating: 4.4, latOff: 0.014, lonOff: -0.012 },
+        { suffix: "Heart & Vascular Center", type: "Cardiology, Vascular Surgery", phone: "+91 44 2829 3333", fee: 450, wait: 8, rating: 4.9, latOff: -0.018, lonOff: -0.015 },
+        { suffix: "Urgent Care Clinic", type: "Dermatology, ENT, Fever Triage", phone: "+91 44 4545 7777", fee: 320, wait: 18, rating: 4.3, latOff: 0.022, lonOff: 0.019 }
     ];
 
     const hospitals = localTemplates.map(t => {
@@ -303,11 +303,11 @@ function renderHospitalsUI(areaName, hospitals) {
 }
 
 let currentBookingHospital = "";
-let currentBookingFee = 500;
+let currentBookingFee = 350;
 
 function bookAppointment(hospitalName, fee) {
     currentBookingHospital = hospitalName;
-    currentBookingFee = fee || 500;
+    currentBookingFee = fee || 350;
     const titleEl = document.getElementById('modalHospitalName');
     if (titleEl) titleEl.innerText = "Book: " + hospitalName;
     
