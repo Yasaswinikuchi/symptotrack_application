@@ -115,6 +115,34 @@
             font-size: 15px;
             font-weight: 800;
             cursor: pointer;
+        .mic-btn-main.recording {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.75), 0 0 50px rgba(239, 68, 68, 0.4) !important;
+            animation: micPulse 1.2s infinite !important;
+        }
+
+        @keyframes micPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .mic-status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94A3B8;
+            transition: all 0.3s ease;
+        }
+
+        .mic-status-badge.active {
+            background: rgba(239, 68, 68, 0.25);
+            color: #F87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
     </style>
 </head>
@@ -129,13 +157,15 @@
             <div class="header-title">Voice Symptoms</div>
         </header>
 
-        <div class="voice-card">
+        <div class="voice-card" id="voiceCard">
             <h3 style="font-size: 17px; font-weight: 800; color: #FFF; margin-bottom: 4px;">Speak Your Symptoms</h3>
             <p style="font-size: 12px; color: #94A3B8;">Tap the microphone button to start recording your symptoms</p>
 
             <button class="mic-btn-main" id="btnMic">
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 1a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
             </button>
+
+            <div id="micStatusText" class="mic-status-badge">🎤 Tap Microphone to Speak</div>
 
             <div style="margin-top: 12px;">
                 <button class="preset-pill" onclick="insertSample('I have had a high fever and severe headache for 2 days.')">🤒 Fever & Headache</button>
