@@ -79,6 +79,56 @@
             transition: all 0.2s ease;
         }
 
+        .mic-btn-main.recording {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.75), 0 0 50px rgba(239, 68, 68, 0.4) !important;
+            animation: micPulse 1.2s infinite !important;
+        }
+
+        @keyframes micPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .mic-status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94A3B8;
+            transition: all 0.3s ease;
+        }
+
+        .mic-status-badge.active {
+            background: rgba(239, 68, 68, 0.25);
+            color: #F87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-stop-recording {
+            display: none;
+            margin: 12px auto 6px;
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: #FFFFFF;
+            border: 1px solid #EF4444;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-stop-recording:hover {
+            transform: scale(1.05);
+            background: #B91C1C;
+        }
+
         .preset-pill {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -137,6 +187,8 @@
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 1a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
             </button>
 
+            <button id="btnStopMic" class="btn-stop-recording">⏹️ STOP RECORDING</button>
+
             <div id="micStatusText" class="mic-status-badge">🎤 Tap Microphone to Speak</div>
 
             <div style="margin-top: 12px;">
@@ -152,7 +204,7 @@
         </div>
     </div>
 
-    <script src="voice.js?v=20260806_v99"></script>
+    <script src="voice.js?v=20260806_v100"></script>
     <script>
         function insertSample(text) {
             const el = document.getElementById('transcriptText');
@@ -173,7 +225,7 @@
             <span>Symptoms</span>
         </a>
         <a href="history.html" class="nav-item">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
             <span>History</span>
         </a>
         <a href="nearby.html" class="nav-item">

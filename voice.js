@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const btnMic = document.getElementById('btnMic');
+    const btnStopMic = document.getElementById('btnStopMic');
     const voiceCard = document.getElementById('voiceCard');
     const micStatusText = document.getElementById('micStatusText');
     const transcriptText = document.getElementById('transcriptText');
@@ -20,8 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
             isRecording = true;
             if (voiceCard) voiceCard.classList.add('recording');
             if (btnMic) btnMic.classList.add('recording');
+            if (btnStopMic) btnStopMic.style.display = 'inline-block';
             if (micStatusText) {
-                micStatusText.textContent = '🔴 LISTENING... SPEAK NOW';
+                micStatusText.textContent = '🔴 RECORDING IN PROGRESS... Speak Now';
                 micStatusText.classList.add('active');
             }
         };
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isRecording = false;
         if (voiceCard) voiceCard.classList.remove('recording');
         if (btnMic) btnMic.classList.remove('recording');
+        if (btnStopMic) btnStopMic.style.display = 'none';
         if (micStatusText) {
             micStatusText.textContent = '🎤 Tap Microphone to Speak';
             micStatusText.classList.remove('active');
@@ -66,6 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try { recognition.stop(); } catch(e){}
         }
     };
+
+    if (btnStopMic) {
+        btnStopMic.addEventListener('click', stopRecording);
+    }
 
     if (btnMic) {
         btnMic.addEventListener('click', () => {
