@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Master Interactive Naive Bayes AI Engine (R Language)
-# Synchronized 100% Identically with Website JavaScript ML Classifier (ml.js)
+# SymptoTrack Pro - Interactive Runtime Input Naive Bayes AI Engine (R)
+# Prompts live in RStudio Console via readline()
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -8,7 +8,7 @@ if (!require("jsonlite")) {
   library(jsonlite)
 }
 
-# 1. EMBEDDED MASTER MEDICAL DATASET (EXACT MATCH WITH ml.js & WEBSITE)
+# 1. EMBEDDED MASTER MEDICAL DATASET
 dataset_json_text <- '[
   {
     "disease_name": "Acute Gastroenteritis / Dyspepsia",
@@ -63,7 +63,6 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
     disease_symptoms <- unlist(dataset$symptoms[i])
     rec <- dataset$recommendation[i]
     
-    # Calculate exact matches
     match_count <- 0
     for (tok in tokens) {
       if (any(tok == disease_symptoms) || any(grepl(tok, disease_symptoms))) {
@@ -71,12 +70,8 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
       }
     }
     
-    # Weight boost for specific key symptoms (vomiting -> Gastroenteritis)
     if (grepl("vomit", cleaned) && grepl("Gastroenteritis", disease)) {
       match_count <- match_count + 2.0
-    }
-    if (grepl("chest pain", cleaned) && grepl("Hypertensive", disease)) {
-      match_count <- match_count + 2.5
     }
     
     score <- log(1 / nrow(dataset)) + (match_count * 1.8)
@@ -92,7 +87,6 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
   top_diagnosis <- df_results$Disease[1]
   top_recommendation <- df_results$Recommendation[1]
   
-  # CDSS Risk Calculation for Age 90 + Co-morbidities
   risk_level <- "Moderate Risk"
   cond_lower <- tolower(pre_existing)
   if (grepl("asthma|hypertension|diabetes|cancer", cond_lower) || patient_age > 60) {
@@ -132,23 +126,13 @@ run_interactive_r_session <- function() {
   gender_input  <- readline(prompt = "Enter patient gender: ")
   cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
 
-  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "i am having fever from last 15 days and vomiting"
-  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 90
-  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
-  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "Diabetes, Asthma, cancer, Hypertension"
-
   predict_symptoms(
-    symptom_text = sym_val,
-    patient_age = age_val,
-    patient_gender = gen_val,
-    pre_existing = cnd_val
+    symptom_text = symptom_input,
+    patient_age = as.numeric(age_input),
+    patient_gender = gender_input,
+    pre_existing = cond_input
   )
 }
 
-# Execute prediction immediately synchronized with website output
-predict_symptoms(
-  symptom_text = "i am having fever from last 15 days and vomiting",
-  patient_age = 90,
-  patient_gender = "Female",
-  pre_existing = "Diabetes, Asthma, cancer, Hypertension"
-)
+# Execute interactive session
+run_interactive_r_session()
