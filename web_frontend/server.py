@@ -123,9 +123,26 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
                 age = data.get('patientAge', 25)
                 gender = data.get('patientGender', 'Female')
                 conditions = data.get('preExistingConditions', 'None')
+                import datetime
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                log_entry = {
+                    'symptomsText': symptoms_text,
+                    'patientAge': age,
+                    'patientGender': gender,
+                    'preExistingConditions': conditions,
+                    'timestamp': timestamp
+                }
+
+                # Save live entry for real-time watchers
+                try:
+                    with open('live_webpage_inputs.json', 'w', encoding='utf-8') as lf:
+                        json.dump(log_entry, lf, indent=2)
+                except Exception:
+                    pass
 
                 print(f"\n=======================================================")
-                print(f"[LIVE 'DESCRIBE HOW YOU FEEL' WEBPAGE INPUT CAPTURED]")
+                print(f"[LIVE WEBPAGE INPUT CAPTURED @ {timestamp}]")
                 print(f"Textarea Input  : '{symptoms_text}'")
                 print(f"Patient Profile : Age {age} | Gender {gender} | Conditions: {conditions}")
 
