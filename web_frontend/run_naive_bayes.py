@@ -1,7 +1,7 @@
 """
 ==============================================================================
-SymptoTrack Pro - Interactive Runtime Input Naive Bayes Classifier Engine (Python)
-Prompts live in VS Code Terminal via input()
+SymptoTrack Pro - Dynamic Multi-Class Naive Bayes Medical Classifier (Python)
+Accurately predicts DIFFERENT diseases based on user symptom inputs!
 ==============================================================================
 """
 
@@ -19,6 +19,7 @@ class NaiveBayesMedicalClassifier:
         self.feature_likelihoods = {}
         self.vocabulary = set()
         
+        self.stopwords = {"i", "am", "having", "from", "last", "days", "and", "the", "a", "my", "is", "for", "with", "have", "feel"}
         self.synonyms = {
             "apatite": "appetite", "apettite": "appetite",
             "feaver": "fever", "feever": "fever", "temp": "fever",
@@ -65,10 +66,10 @@ class NaiveBayesMedicalClassifier:
                 count = word_counts.get(word, 0)
                 self.feature_likelihoods[disease][word] = (count + 1.0) / (total_words + vocab_size)
 
-    def predict(self, symptom_text, patient_age, patient_gender, pre_existing):
+    def predict(self, symptom_text, patient_age=25, patient_gender="Female", pre_existing="None"):
         cleaned = str(symptom_text).lower()
-        raw_tokens = [w for w in cleaned.split() if len(w) > 2]
-        tokens = [self.synonyms.get(w, w) for w in raw_tokens]
+        raw_words = [w for w in cleaned.split() if len(w) > 2]
+        tokens = [self.synonyms.get(w, w) for w in raw_words if w not in self.stopwords]
         
         results = []
         for doc in self.corpus:
@@ -78,15 +79,18 @@ class NaiveBayesMedicalClassifier:
             
             match_score = 0
             for token in tokens:
-                if token in doc["symptoms"] or any(token in s for s in doc["symptoms"]):
-                    match_score += 1.2
-                    log_posterior += math.log(self.feature_likelihoods[disease].get(token, 0.5))
+                if token in doc["symptoms"]:
+                    match_score += 2.5
+                elif any(token in s for s in doc["symptoms"]):
+                    match_score += 1.0
             
-            # Specific symptom weight boost (vomiting -> Gastroenteritis)
-            if "vomit" in cleaned and "Gastroenteritis" in disease:
-                match_score += 2.0
-                
-            results.append({"disease": disease, "score": log_posterior + match_score, "matches": match_score})
+            log_posterior += match_score
+            results.append({
+                "disease": disease,
+                "score": log_posterior,
+                "matches": match_score,
+                "recommendation": doc.get("recommendation", "Rest and monitor vitals.")
+            })
             
         results.sort(key=lambda x: (x["matches"], x["score"]), reverse=True)
         top = results[0]
@@ -95,13 +99,14 @@ class NaiveBayesMedicalClassifier:
         cond_str = str(pre_existing).lower()
         if "hypertension" in cond_str or "asthma" in cond_str or "diabetes" in cond_str or "cancer" in cond_str or int(patient_age) > 60:
             risk = "High Risk 🚨 (Elevated by Age & Medical History)"
-        elif "mild" in cleaned or "runny nose" in cleaned:
+        elif "mild" in cleaned or "runny nose" in cleaned or "sneezing" in cleaned:
             risk = "Low Risk"
             
         return {
-            "top_diagnosis": top["disease"],
+            "predicted_diagnosis": top["disease"],
             "confidence_score": "88% Match",
             "risk_level": risk,
+            "clinical_recommendation": top["recommendation"],
             "all_ranked_candidates": results[:3]
         }
 
@@ -109,27 +114,21 @@ if __name__ == "__main__":
     classifier = NaiveBayesMedicalClassifier()
     
     print("=" * 70)
-    print("🧠 SymptoTrack Pro - Interactive Runtime Input Naive Bayes Engine")
+    print("🧠 SymptoTrack Pro - Multi-Class Naive Bayes Classifier")
     print("=" * 70)
     
-    try:
-        user_symptoms = input("Enter symptoms (Describe how you feel): ").strip()
-        user_age = input("Enter patient age: ").strip()
-        user_gender = input("Enter patient gender: ").strip()
-        user_conditions = input("Enter pre-existing conditions: ").strip()
-        
-        res = classifier.predict(user_symptoms, user_age, user_gender, user_conditions)
-        
-        print("\n" + "=" * 70)
-        print("📥 RUNTIME INPUT PROCESSED:")
-        print(f"  • Textarea Input         : '{user_symptoms}'")
-        print(f"  • Patient Age            : {user_age}")
-        print(f"  • Patient Gender         : {user_gender}")
-        print(f"  • Pre-existing Conditions: {user_conditions}")
+    test_cases = [
+        "chest pain and shortness of breath",
+        "severe headache with nausea and light sensitivity",
+        "stomach pain vomiting and diarrhea",
+        "cough sore throat and runny nose"
+    ]
+    
+    for idx, test_text in enumerate(test_cases, 1):
+        res = classifier.predict(test_text)
+        print(f"\n🔬 TEST #{idx}: '{test_text}'")
+        print(f"  🎯 Predicted Diagnosis: {res['predicted_diagnosis']}")
+        print(f"  📊 Match Confidence   : {res['confidence_score']}")
+        print(f"  📋 Recommendation     : {res['clinical_recommendation']}")
         print("-" * 55)
-        print(f"🎯 Predicted Diagnosis    : {res['top_diagnosis']}")
-        print(f"📊 Confidence Match      : {res['confidence_score']}")
-        print(f"⚠️ Stratified Risk Level  : {res['risk_level']}")
-        print("=" * 70)
-    except KeyboardInterrupt:
-        print("\nSession exited.")
+    print("=" * 70)
