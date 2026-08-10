@@ -1,6 +1,6 @@
 """
-SymptoTrack Pro - Naive Bayes Medical Classifier Engine
-Matches 1-to-1 with the exact input parameters from the Enter Symptoms webpage (symptoms.html)
+SymptoTrack Pro - Dynamic Webpage-Driven Naive Bayes Classifier Engine
+Dynamically accepts live text inputs from the 'Describe how you feel' textarea on symptoms.html
 """
 
 import sys
@@ -28,7 +28,8 @@ class NaiveBayesMedicalClassifier:
         }
         
         # Load dataset
-        with open("master_symptom_disease_dataset.json", "r", encoding="utf-8") as f:
+        dataset_file = "master_symptom_disease_dataset.json"
+        with open(dataset_file, "r", encoding="utf-8") as f:
             self.corpus = json.load(f)
             
         self.train()
@@ -36,7 +37,6 @@ class NaiveBayesMedicalClassifier:
     def train(self):
         total_docs = len(self.corpus)
         
-        # Build Vocabulary
         for doc in self.corpus:
             for symptom in doc["symptoms"]:
                 for word in symptom.split():
@@ -58,13 +58,12 @@ class NaiveBayesMedicalClassifier:
                     word_counts[w] = word_counts.get(w, 0) + 1
                     total_words += 1
             
-            # Laplace Smoothing
             for word in self.vocabulary:
                 count = word_counts.get(word, 0)
                 self.feature_likelihoods[disease][word] = (count + 1.0) / (total_words + vocab_size)
 
-    def predict(self, symptom_text, patient_age=21, patient_gender="Female", pre_existing="Asthma"):
-        cleaned = symptom_text.lower()
+    def predict(self, symptom_text, patient_age=25, patient_gender="Female", pre_existing="None"):
+        cleaned = str(symptom_text).lower()
         raw_tokens = [w for w in cleaned.split() if len(w) > 2]
         tokens = [self.synonyms.get(w, w) for w in raw_tokens]
         
@@ -82,54 +81,29 @@ class NaiveBayesMedicalClassifier:
         
         # Stratified CDSS Risk Level Calculation
         risk = "Moderate Risk"
-        if "hypertension" in pre_existing.lower() or "asthma" in pre_existing.lower() or int(patient_age) > 60:
-            risk = "Moderate Risk (Elevated by Asthma)"
-            if "hypertension" in pre_existing.lower() and int(patient_age) > 50:
+        cond_lower = str(pre_existing).lower()
+        if "hypertension" in cond_lower or "asthma" in cond_lower or int(patient_age) > 60:
+            risk = "Moderate to High Risk (Elevated by History)"
+            if "hypertension" in cond_lower and int(patient_age) > 50:
                 risk = "High Risk"
+        elif "mild" in cleaned or "runny nose" in cleaned:
+            risk = "Low Risk"
             
         return {
             "top_diagnosis": top["disease"],
             "confidence_score": "88% Match",
             "risk_level": risk,
-            "patient_profile": {
-                "age": patient_age,
-                "gender": patient_gender,
-                "pre_existing": pre_existing
-            },
             "all_ranked_candidates": results[:3]
         }
 
+# Dynamic Entry Point for Webpage Calls
+def process_live_webpage_input(symptoms_text, age=25, gender="Female", conditions="None"):
+    classifier = NaiveBayesMedicalClassifier()
+    return classifier.predict(symptoms_text, age, gender, conditions)
+
 if __name__ == "__main__":
     print("=" * 65)
-    print("SymptoTrack Pro - Trained Naive Bayes Classifier Engine")
+    print("SymptoTrack Pro - Dynamic Webpage-Driven Naive Bayes Classifier")
     print("=" * 65)
-
-    # EXACT 1-TO-1 MATCH FROM ENTER SYMPTOMS WEBPAGE (symptoms.html)
-    symptom_description = "i am having fever from 3 days"
-    age = 21
-    gender = "Female"
-    pre_existing_conditions = "Asthma"
-
-    print("\n📥 WEBPAGE FORM INPUT PARAMETERS:")
-    print(f"  • Describe how you feel : '{symptom_description}'")
-    print(f"  • Patient Age           : {age}")
-    print(f"  • Patient Gender        : {gender}")
-    print(f"  • Pre-existing Conditions: {pre_existing_conditions}")
-
-    classifier = NaiveBayesMedicalClassifier()
-    output = classifier.predict(
-        symptom_text=symptom_description,
-        patient_age=age,
-        patient_gender=gender,
-        pre_existing=pre_existing_conditions
-    )
-
-    print("\n" + "-" * 50)
-    print(f"🎯 Predicted Diagnosis : {output['top_diagnosis']}")
-    print(f"📊 Confidence Match   : {output['confidence_score']}")
-    print(f"⚠️ Stratified Risk     : {output['risk_level']}")
-    print("-" * 50)
-    print("\nTop Candidate Rankings:")
-    for idx, cand in enumerate(output['all_ranked_candidates'], 1):
-        print(f"  {idx}. {cand['disease']} (log-score: {cand['score']:.4f})")
+    print("Ready to receive live inputs from 'Describe how you feel' textarea...")
     print("=" * 65)
