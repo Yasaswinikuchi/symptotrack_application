@@ -1,7 +1,7 @@
 """
 ==============================================================================
-SymptoTrack Pro - Synchronized Naive Bayes Medical Classifier Engine (Python)
-Matches 100% Identically with Website JavaScript Output (ml.js)
+SymptoTrack Pro - Interactive Runtime Input Naive Bayes Classifier Engine (Python)
+Prompts live in VS Code Terminal via input()
 ==============================================================================
 """
 
@@ -65,7 +65,7 @@ class NaiveBayesMedicalClassifier:
                 count = word_counts.get(word, 0)
                 self.feature_likelihoods[disease][word] = (count + 1.0) / (total_words + vocab_size)
 
-    def predict(self, symptom_text, patient_age=90, patient_gender="Female", pre_existing="Diabetes, Asthma, cancer, Hypertension"):
+    def predict(self, symptom_text, patient_age, patient_gender, pre_existing):
         cleaned = str(symptom_text).lower()
         raw_tokens = [w for w in cleaned.split() if len(w) > 2]
         tokens = [self.synonyms.get(w, w) for w in raw_tokens]
@@ -108,34 +108,28 @@ class NaiveBayesMedicalClassifier:
 if __name__ == "__main__":
     classifier = NaiveBayesMedicalClassifier()
     
-    # Exact screenshot input parameters
-    symptom_text = "i am having fever from last 15 days and vomiting"
-    patient_age = 90
-    patient_gender = "Female"
-    pre_existing = "Diabetes, Asthma, cancer, Hypertension"
-
-    # Check live file if available
-    live_file = "live_webpage_inputs.json"
-    if os.path.exists(live_file):
-        with open(live_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            symptom_text = data.get("symptomsText", symptom_text)
-            patient_age = data.get("patientAge", patient_age)
-            patient_gender = data.get("patientGender", patient_gender)
-            pre_existing = data.get("preExistingConditions", pre_existing)
-
-    res = classifier.predict(symptom_text, patient_age, patient_gender, pre_existing)
+    print("=" * 70)
+    print("🧠 SymptoTrack Pro - Interactive Runtime Input Naive Bayes Engine")
+    print("=" * 70)
     
-    print("=" * 70)
-    print("🧠 SYMPTOTRACK PRO - SYNCHRONIZED PYTHON CLASSIFIER OUTPUT")
-    print("=" * 70)
-    print(f"📥 WEBPAGE FORM INPUT PROCESSED:")
-    print(f"  • Describe how you feel  : '{symptom_text}'")
-    print(f"  • Patient Age            : {patient_age}")
-    print(f"  • Patient Gender         : {patient_gender}")
-    print(f"  • Pre-existing Conditions: {pre_existing}")
-    print("-" * 55)
-    print(f"🎯 Predicted Diagnosis    : {res['top_diagnosis']}")
-    print(f"📊 Confidence Match      : {res['confidence_score']}")
-    print(f"⚠️ Stratified Risk Level  : {res['risk_level']}")
-    print("=" * 70)
+    try:
+        user_symptoms = input("Enter symptoms (Describe how you feel): ").strip()
+        user_age = input("Enter patient age: ").strip()
+        user_gender = input("Enter patient gender: ").strip()
+        user_conditions = input("Enter pre-existing conditions: ").strip()
+        
+        res = classifier.predict(user_symptoms, user_age, user_gender, user_conditions)
+        
+        print("\n" + "=" * 70)
+        print("📥 RUNTIME INPUT PROCESSED:")
+        print(f"  • Textarea Input         : '{user_symptoms}'")
+        print(f"  • Patient Age            : {user_age}")
+        print(f"  • Patient Gender         : {user_gender}")
+        print(f"  • Pre-existing Conditions: {user_conditions}")
+        print("-" * 55)
+        print(f"🎯 Predicted Diagnosis    : {res['top_diagnosis']}")
+        print(f"📊 Confidence Match      : {res['confidence_score']}")
+        print(f"⚠️ Stratified Risk Level  : {res['risk_level']}")
+        print("=" * 70)
+    except KeyboardInterrupt:
+        print("\nSession exited.")
