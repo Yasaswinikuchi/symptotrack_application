@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Interactive Runtime Input Naive Bayes AI Engine (R)
-# Prompts live in RStudio Console via readline()
+# SymptoTrack Pro - Multi-Class Naive Bayes Classifier Engine (R)
+# Dynamic Multi-Disease Prediction (Predicts Different Diseases for Different Symptoms)
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -8,13 +8,8 @@ if (!require("jsonlite")) {
   library(jsonlite)
 }
 
-# 1. EMBEDDED MASTER MEDICAL DATASET
+# 1. EMBEDDED MULTI-DISEASE DATASET
 dataset_json_text <- '[
-  {
-    "disease_name": "Acute Gastroenteritis / Dyspepsia",
-    "symptoms": ["vomiting", "vomit", "stomach pain", "nausea", "diarrhea", "appetite", "bloating", "acidity"],
-    "recommendation": "Take small frequent sips of ORS electrolyte fluids, eat light non-spicy foods."
-  },
   {
     "disease_name": "Viral Influenza / Seasonal Flu",
     "symptoms": ["fever", "fatigue", "chills", "body pain", "headache", "cough", "appetite", "sore throat"],
@@ -31,6 +26,11 @@ dataset_json_text <- '[
     "recommendation": "Rest in a quiet, dark room away from mobile screens, apply cold compress."
   },
   {
+    "disease_name": "Acute Gastroenteritis / Dyspepsia",
+    "symptoms": ["stomach pain", "nausea", "vomiting", "diarrhea", "appetite", "bloating", "acidity"],
+    "recommendation": "Take small frequent sips of ORS electrolyte fluids, eat light non-spicy foods."
+  },
+  {
     "disease_name": "Bronchial Hypersensitivity / Asthma Flare",
     "symptoms": ["shortness of breath", "wheezing", "chest tightness", "cough", "breathlessness"],
     "recommendation": "Administer prescribed rescue bronchodilator inhaler immediately."
@@ -44,13 +44,17 @@ dataset_json_text <- '[
 
 dataset <- fromJSON(dataset_json_text)
 
-# 2. SYNCHRONIZED NAIVE BAYES & CDSS CLASSIFIER FUNCTION
-predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_existing) {
+# 2. ACCURATE NAIVE BAYES MULTI-CLASS CLASSIFIER
+predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
   
   cleaned <- tolower(symptom_text)
-  raw_tokens <- unlist(strsplit(cleaned, "\\s+"))
-  tokens <- raw_tokens[nchar(raw_tokens) > 2]
   
+  # Remove stop words
+  stopwords <- c("i", "am", "having", "from", "last", "days", "and", "the", "a", "my", "is", "for", "with", "have", "feel")
+  words <- unlist(strsplit(cleaned, "[^a-z]+"))
+  tokens <- words[!(words %in% stopwords) & nchar(words) > 2]
+  
+  # Synonym mapping
   synonyms <- list(apatite = "appetite", feaver = "fever", temp = "fever", vomit = "vomiting")
   tokens <- sapply(tokens, function(t) ifelse(t %in% names(synonyms), synonyms[[t]], t))
   
@@ -63,18 +67,17 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
     disease_symptoms <- unlist(dataset$symptoms[i])
     rec <- dataset$recommendation[i]
     
+    # Exact word match scoring
     match_count <- 0
     for (tok in tokens) {
-      if (any(tok == disease_symptoms) || any(grepl(tok, disease_symptoms))) {
-        match_count <- match_count + 1.2
+      if (any(tok == disease_symptoms)) {
+        match_count <- match_count + 2.5
+      } else if (any(sapply(disease_symptoms, function(s) grepl(tok, s)))) {
+        match_count <- match_count + 1.0
       }
     }
     
-    if (grepl("vomit", cleaned) && grepl("Gastroenteritis", disease)) {
-      match_count <- match_count + 2.0
-    }
-    
-    score <- log(1 / nrow(dataset)) + (match_count * 1.8)
+    score <- log(1 / nrow(dataset)) + match_count
     
     scores <- c(scores, score)
     disease_names <- c(disease_names, disease)
@@ -87,18 +90,17 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
   top_diagnosis <- df_results$Disease[1]
   top_recommendation <- df_results$Recommendation[1]
   
+  # CDSS Risk Calculation
   risk_level <- "Moderate Risk"
   cond_lower <- tolower(pre_existing)
   if (grepl("asthma|hypertension|diabetes|cancer", cond_lower) || patient_age > 60) {
     risk_level <- "High Risk 🚨 (Elevated by Age & Medical History)"
-  } else if (grepl("mild|runny nose", cleaned)) {
+  } else if (grepl("mild|runny nose|sneezing", cleaned)) {
     risk_level <- "Low Risk"
   }
   
   cat("\n=================================================================\n")
-  cat("🧠 SYMPTOTRACK PRO - SYNCHRONIZED WEBPAGE & R CLASSIFIER OUTPUT\n")
-  cat("=================================================================\n")
-  cat("📥 RUNTIME INPUT PROCESSED:\n")
+  cat("📥 SYMPTOM INPUT PROCESSED:\n")
   cat("  • Describe how you feel  :", symptom_text, "\n")
   cat("  • Patient Age            :", patient_age, "\n")
   cat("  • Patient Gender         :", patient_gender, "\n")
@@ -115,24 +117,29 @@ predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_exis
   return(invisible(df_results))
 }
 
-# 3. INTERACTIVE RUNTIME INPUT ENGINE (READLINE PROMPTS)
+# 3. INTERACTIVE RUNTIME INPUT PROMPT ENGINE
 run_interactive_r_session <- function() {
   cat("=================================================================\n")
-  cat("🧠 SymptoTrack Pro - RStudio Interactive Runtime Input Classifier\n")
+  cat("🧠 SymptoTrack Pro - RStudio Interactive Multi-Disease Classifier\n")
   cat("=================================================================\n\n")
 
   symptom_input <- readline(prompt = "Enter symptoms (Describe how you feel): ")
-  age_input     <- readline(prompt = "Enter patient age: ")
-  gender_input  <- readline(prompt = "Enter patient gender: ")
+  age_input     <- readline(prompt = "Enter patient age (default 25): ")
+  gender_input  <- readline(prompt = "Enter patient gender (Female/Male): ")
   cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
 
+  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "chest pain and shortness of breath"
+  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 25
+  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
+  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "None"
+
   predict_symptoms(
-    symptom_text = symptom_input,
-    patient_age = as.numeric(age_input),
-    patient_gender = gender_input,
-    pre_existing = cond_input
+    symptom_text = sym_val,
+    patient_age = age_val,
+    patient_gender = gen_val,
+    pre_existing = cnd_val
   )
 }
 
-# Execute interactive session
+# Run session automatically
 run_interactive_r_session()
