@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Require valid scan result session data - redirect to scan page if missing or empty
-    if (!data || (!data.condition && !data.riskLevel)) {
+    if (!data || (!data.condition && !data.conditions && !data.riskLevel)) {
         console.warn("No active scan result found in session storage. Redirecting to scan page.");
         sessionStorage.removeItem("analysisResult");
         window.location.href = "scan.html";
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Render Recommended Action Plan
-    const actionListEl = document.getElementById("actionPlanList");
+    const actionListEl = document.getElementById("recommendationsContainer") || document.getElementById("actionPlanList");
     let recsArr = data.recommendations || [];
 
     if (!recsArr.length && data.next_steps && Array.isArray(data.next_steps)) {

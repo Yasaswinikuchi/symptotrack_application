@@ -1,0 +1,7 @@
+Disease_ID,Disease_Name,Category,Primary_Symptoms,Base_Risk_Level,Target_Age_Group,Precautions,Primary_Recommendation
+DIS_001,Viral Influenza / Seasonal Flu,Infectious Viral Respiratory,"fever, fatigue, chills, body pain, headache, cough, low appetite, sore throat",Moderate Risk,All Ages,"Stay hydrated, Get sleep, Avoid public",Drink 2.5–3L warm fluids daily
+DIS_002,Acute Upper Respiratory Tract Infection,Respiratory Infection,"cough, sore throat, runny nose, sneezing, nasal congestion, phlegm",Low Risk,All Ages,"Salt water gargle, Steam inhalation",Perform warm steam inhalation twice daily
+DIS_003,Migraine / Tension Headache Syndrome,Neurological / Muscular,"headache, nausea, light sensitivity, throbbing pain, dizziness, stress",Moderate Risk,Adults (15-60),"Avoid screen glare, Hydrate, Dark room rest",Rest in a quiet dark room
+DIS_004,Acute Gastroenteritis / Dyspepsia,Gastrointestinal,"stomach pain, nausea, vomiting, diarrhea, low appetite, bloating, acidity",Moderate Risk,All Ages,"BRAT diet, Electrolyte sips, Avoid spicy",Take small frequent sips of ORS
+DIS_005,Bronchial Hypersensitivity / Asthma Flare,Pulmonary / Respiratory,"shortness of breath, wheezing, chest tightness, cough, breathlessness",High Risk,All Ages,"Use rescue inhaler, Sit upright, Avoid dust",Use prescribed bronchodilator immediately
+DIS_006,Hypertensive Crisis / Cardiovascular Strain,Cardiovascular,"chest pain, chest tightness, palpitations, shortness of breath, hypertension",High Risk,Adults (35+),"Stop activity, Measure BP, Emergency ER",Seek immediate ER hospital evaluation

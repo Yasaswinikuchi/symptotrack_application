@@ -15,7 +15,7 @@
             } else {
                 try {
                     var parsed = JSON.parse(raw);
-                    if (!parsed || !parsed.condition) {
+                    if (!parsed || (!parsed.condition && !parsed.conditions && !parsed.riskLevel)) {
                         sessionStorage.removeItem("analysisResult");
                         location.replace("scan.html");
                     }
