@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Master Naive Bayes Medical Classifier Engine (R Language)
-# 100% Synchronized Output Format with Website ml.js Engine & result.html UI
+# SymptoTrack Pro - Interactive Runtime Input Naive Bayes AI Engine (R Language)
+# ZERO Default Fallback Strings. Prompts user live via readline().
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -8,7 +8,7 @@ if (!require("jsonlite")) {
   library(jsonlite)
 }
 
-# 1. EMBEDDED MASTER KNOWLEDGE BASE DATASET (EXACT MATCH WITH WEBSITE ml.js)
+# 1. EMBEDDED MASTER KNOWLEDGE BASE DATASET
 dataset_json_text <- '[
   {
     "id": "viral_flu",
@@ -88,6 +88,11 @@ dataset <- fromJSON(dataset_json_text)
 
 # 2. NAIVE BAYES CLASSIFIER & RISK STRATIFICATION MATCHING WEBSITE LOGIC
 predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
+  
+  if (is.null(symptom_text) || nchar(trimws(symptom_text)) == 0) {
+    cat("\n⚠️ Error: No symptoms provided. Please type your symptoms when prompted.\n")
+    return(invisible(NULL))
+  }
   
   cleaned <- tolower(symptom_text)
   stopwords <- c("i", "am", "having", "from", "last", "days", "and", "the", "a", "my", "is", "for", "with", "have", "feel")
@@ -187,7 +192,7 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   return(invisible(matches_list))
 }
 
-# 3. INTERACTIVE RUNTIME INPUT PROMPT ENGINE
+# 3. INTERACTIVE RUNTIME INPUT ENGINE (READLINE PROMPTS)
 run_interactive_r_session <- function() {
   cat("=================================================================\n")
   cat("🧠 SymptoTrack Pro - RStudio Interactive Runtime Input Classifier\n")
@@ -198,23 +203,13 @@ run_interactive_r_session <- function() {
   gender_input  <- readline(prompt = "Enter patient gender: ")
   cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
 
-  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "i am having fever from last 15 days and vomiting"
-  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 90
-  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
-  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "Diabetes, Asthma, cancer, Hypertension"
-
   predict_symptoms(
-    symptom_text = sym_val,
-    patient_age = age_val,
-    patient_gender = gen_val,
-    pre_existing = cnd_val
+    symptom_text = symptom_input,
+    patient_age = age_input,
+    patient_gender = gender_input,
+    pre_existing = cond_input
   )
 }
 
-# Execute prediction matching screenshot inputs
-predict_symptoms(
-  symptom_text = "i am having fever from last 15 days and vomiting",
-  patient_age = 90,
-  patient_gender = "Female",
-  pre_existing = "Diabetes, Asthma, cancer, Hypertension"
-)
+# Execute interactive session
+run_interactive_r_session()
