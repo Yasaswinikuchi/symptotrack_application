@@ -121,19 +121,18 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
                 data = json.loads(post_data.decode('utf-8'))
                 symptoms_text = data.get('symptomsText', '')
                 age = data.get('patientAge', 25)
-                gender = data.get('patientGender', 'Male')
+                gender = data.get('patientGender', 'Female')
                 conditions = data.get('preExistingConditions', 'None')
 
                 print(f"\n=======================================================")
-                print(f"[LIVE ENTER SYMPTOMS WEBPAGE INPUT RECEIVED]")
-                print(f"Symptoms Input : '{symptoms_text}'")
-                print(f"Patient Profile: Age {age} | Gender {gender} | Conditions: {conditions}")
+                print(f"[LIVE 'DESCRIBE HOW YOU FEEL' WEBPAGE INPUT CAPTURED]")
+                print(f"Textarea Input  : '{symptoms_text}'")
+                print(f"Patient Profile : Age {age} | Gender {gender} | Conditions: {conditions}")
 
-                # Run Naive Bayes Inference Engine
+                # Execute Python Naive Bayes Classifier on Live Webpage Input
                 try:
-                    from run_naive_bayes import NaiveBayesMedicalClassifier
-                    nb_model = NaiveBayesMedicalClassifier()
-                    res = nb_model.predict(symptoms_text, patient_age=age, pre_existing=str(conditions))
+                    from run_naive_bayes import process_live_webpage_input
+                    res = process_live_webpage_input(symptoms_text, age, gender, conditions)
                     
                     print(f"\n[PYTHON NAIVE BAYES INFERENCE RESULT]")
                     print(f"Diagnosis : {res['top_diagnosis']} ({res['confidence_score']})")
