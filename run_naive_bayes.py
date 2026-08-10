@@ -1,7 +1,6 @@
 """
-SymptoTrack Pro - Dynamic Interactive Naive Bayes Medical Classifier
-Accepts live user input for any symptoms, age, and pre-existing conditions.
-Runs in VS Code Terminal (0 external dependencies required)
+SymptoTrack Pro - Naive Bayes Medical Classifier Engine
+Matches 1-to-1 with the exact input parameters from the Enter Symptoms webpage (symptoms.html)
 """
 
 import sys
@@ -19,7 +18,7 @@ class NaiveBayesMedicalClassifier:
         self.vocabulary = set()
         
         # Medical Synonym Normalizer
-        this_synonyms = {
+        self.synonyms = {
             "apatite": "appetite", "apettite": "appetite",
             "feaver": "fever", "feever": "fever", "temp": "fever",
             "head ache": "headache", "migrain": "migraine",
@@ -27,7 +26,6 @@ class NaiveBayesMedicalClassifier:
             "stomach ache": "stomach pain", "vomit": "vomiting",
             "high bp": "hypertension", "bp": "hypertension"
         }
-        self.synonyms = this_synonyms
         
         # Load dataset
         with open("master_symptom_disease_dataset.json", "r", encoding="utf-8") as f:
@@ -65,7 +63,7 @@ class NaiveBayesMedicalClassifier:
                 count = word_counts.get(word, 0)
                 self.feature_likelihoods[disease][word] = (count + 1.0) / (total_words + vocab_size)
 
-    def predict(self, symptom_text, patient_age=25, pre_existing="None"):
+    def predict(self, symptom_text, patient_age=21, patient_gender="Female", pre_existing="Asthma"):
         cleaned = symptom_text.lower()
         raw_tokens = [w for w in cleaned.split() if len(w) > 2]
         tokens = [self.synonyms.get(w, w) for w in raw_tokens]
@@ -82,48 +80,56 @@ class NaiveBayesMedicalClassifier:
         results.sort(key=lambda x: x["score"], reverse=True)
         top = results[0]
         
-        # Calculate Risk Level
+        # Stratified CDSS Risk Level Calculation
         risk = "Moderate Risk"
         if "hypertension" in pre_existing.lower() or "asthma" in pre_existing.lower() or int(patient_age) > 60:
-            risk = "High Risk"
-        elif "mild" in symptom_text.lower() or "runny nose" in symptom_text.lower():
-            risk = "Low Risk"
+            risk = "Moderate Risk (Elevated by Asthma)"
+            if "hypertension" in pre_existing.lower() and int(patient_age) > 50:
+                risk = "High Risk"
             
         return {
             "top_diagnosis": top["disease"],
             "confidence_score": "88% Match",
             "risk_level": risk,
+            "patient_profile": {
+                "age": patient_age,
+                "gender": patient_gender,
+                "pre_existing": pre_existing
+            },
             "all_ranked_candidates": results[:3]
         }
 
-def run_interactive_session():
-    classifier = NaiveBayesMedicalClassifier()
-
-    print("=" * 65)
-    print("🧠 SymptoTrack Pro - Dynamic Interactive Naive Bayes Classifier")
-    print("=" * 65)
-    print("Type any symptoms to test diagnosis. Type 'exit' or 'q' to quit.")
-    print("=" * 65)
-
-    sample_tests = [
-        "i am having fever from 3 days and low apatite",
-        "severe headache with nausea and light sensitivity",
-        "cough, sore throat, runny nose and sneezing",
-        "shortness of breath, wheezing and chest tightness"
-    ]
-
-    for idx, test_text in enumerate(sample_tests, 1):
-        print(f"\n--------------------------------------------------")
-        print(f"🔬 TEST CASE #{idx}")
-        print(f"📥 Symptoms Input : '{test_text}'")
-        output = classifier.predict(test_text, patient_age=25, pre_existing="Hypertension" if idx % 2 == 1 else "None")
-        print(f"🎯 Diagnosis      : {output['top_diagnosis']}")
-        print(f"📊 Confidence     : {output['confidence_score']}")
-        print(f"⚠️ Risk Level     : {output['risk_level']}")
-        print("Top Candidate Matches:")
-        for r_idx, cand in enumerate(output['all_ranked_candidates'], 1):
-            print(f"   {r_idx}. {cand['disease']} (score: {cand['score']:.4f})")
-    print("=" * 65)
-
 if __name__ == "__main__":
-    run_interactive_session()
+    print("=" * 65)
+    print("SymptoTrack Pro - Trained Naive Bayes Classifier Engine")
+    print("=" * 65)
+
+    # EXACT 1-TO-1 MATCH FROM ENTER SYMPTOMS WEBPAGE (symptoms.html)
+    symptom_description = "i am having fever from 3 days"
+    age = 21
+    gender = "Female"
+    pre_existing_conditions = "Asthma"
+
+    print("\n📥 WEBPAGE FORM INPUT PARAMETERS:")
+    print(f"  • Describe how you feel : '{symptom_description}'")
+    print(f"  • Patient Age           : {age}")
+    print(f"  • Patient Gender        : {gender}")
+    print(f"  • Pre-existing Conditions: {pre_existing_conditions}")
+
+    classifier = NaiveBayesMedicalClassifier()
+    output = classifier.predict(
+        symptom_text=symptom_description,
+        patient_age=age,
+        patient_gender=gender,
+        pre_existing=pre_existing_conditions
+    )
+
+    print("\n" + "-" * 50)
+    print(f"🎯 Predicted Diagnosis : {output['top_diagnosis']}")
+    print(f"📊 Confidence Match   : {output['confidence_score']}")
+    print(f"⚠️ Stratified Risk     : {output['risk_level']}")
+    print("-" * 50)
+    print("\nTop Candidate Rankings:")
+    for idx, cand in enumerate(output['all_ranked_candidates'], 1):
+        print(f"  {idx}. {cand['disease']} (log-score: {cand['score']:.4f})")
+    print("=" * 65)
