@@ -505,23 +505,23 @@
             const input = document.getElementById('citySearchInput').value.trim();
             if (!input) return;
 
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.length > 0) {
-                        const cityName = data[0].display_name.split(',')[0];
-                        const lat = parseFloat(data[0].lat);
-                        const lon = parseFloat(data[0].lon);
-                        const randomAqi = Math.floor(Math.random() * 60) + 85;
-                        const randomFlu = "+" + (Math.floor(Math.random() * 8) + 2) + "%";
-                        updateOutbreakData(cityName, randomAqi, randomFlu, "Air Quality & Seasonal Flu alert", lat, lon);
-                    } else {
-                        updateOutbreakData(input, 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
-                    }
-                })
-                .catch(() => {
-                    updateOutbreakData(input, 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
-                });
+            const localCities = {
+                "saveetha": { name: "Saveetha Medical Region", lat: 13.0382, lon: 80.0494 },
+                "thirumazhisai": { name: "Thirumazhisai", lat: 13.0382, lon: 80.0494 },
+                "chennai": { name: "Chennai City", lat: 13.0827, lon: 80.2707 },
+                "hyderabad": { name: "Hyderabad", lat: 17.3850, lon: 78.4867 },
+                "bengaluru": { name: "Bengaluru", lat: 12.9716, lon: 77.5946 },
+                "mumbai": { name: "Mumbai", lat: 19.0760, lon: 72.8777 }
+            };
+
+            const key = input.toLowerCase();
+            if (localCities[key]) {
+                const c = localCities[key];
+                updateOutbreakData(c.name, 98, "+5%", "Air Quality & Seasonal Flu alert", c.lat, c.lon);
+            } else {
+                const title = input.charAt(0).toUpperCase() + input.slice(1);
+                updateOutbreakData(title, 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
+            }
         }
 
         function locateCurrentGPS() {
@@ -530,19 +530,14 @@
                     (pos) => {
                         const lat = pos.coords.latitude;
                         const lon = pos.coords.longitude;
-                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-                            .then(r => r.json())
-                            .then(data => {
-                                const exactArea = extractExactAreaName(data.address);
-                                document.getElementById('citySearchInput').value = exactArea;
-                                updateOutbreakData(exactArea, 96, "+4%", "Live GPS location alert", lat, lon);
-                            })
-                            .catch(() => {
-                                updateOutbreakData("Palanjur, Chennai", 108, "+6%", "Influenza B & Air Quality alert", lat, lon);
-                            });
+                        updateOutbreakData("Your GPS Location", 96, "+4%", "Live GPS location alert", lat, lon);
                     },
                     () => {
-                        // Fallback default Palanjur / Chennai GPS
+                        updateOutbreakData("Palanjur, Chennai", 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
+                    }
+                );
+            }
+        }
                         updateOutbreakData("Palanjur, Chennai", 108, "+6%", "Influenza B & Air Quality alert", 13.0382, 80.0483);
                     }
                 );

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitalis AI - Next-Gen Health & Symptom Tracker</title>
+    <meta name="description" content="AI-powered health monitoring, symptom logging, vitals analytics, and personalized wellness assistant dashboard.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-heart-pulse logo-icon"></i>
+                    <span class="logo-glow"></span>
+                </div>
+                <div class="brand-text">
+                    <h2>Vitalis<span class="badge-ai">AI</span></h2>
+                    <p>Health Companion</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#overview" class="nav-item active" id="nav-overview">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#symptom-checker" class="nav-item" id="nav-symptoms">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Symptom Tracker</span>
+                </a>
+                <a href="#vitals-analytics" class="nav-item" id="nav-vitals">
+                    <i class="fa-solid fa-wave-square"></i>
+                    <span>Vitals & Analytics</span>
+                </a>
+                <a href="#medications" class="nav-item" id="nav-meds">
+                    <i class="fa-solid fa-pills"></i>
+                    <span>Medications</span>
+                </a>
+                <a href="#ai-assistant" class="nav-item" id="nav-ai">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI Health Coach</span>
+                    <span class="nav-badge">Live</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-widget">
+                <div class="health-score-ring">
+                    <svg viewBox="0 0 36 36" class="circular-chart teal">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <path class="circle" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <text x="18" y="20.35" class="percentage">92%</text>
+                    </svg>
+                </div>
+                <div class="widget-info">
+                    <h4>Overall Wellness</h4>
+                    <p>Optimal Condition</p>
+                </div>
+            </div>
+
+            <div class="user-profile">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="User Profile Avatar" class="avatar">
+                <div class="user-details">
+                    <h4>Sarah Jenkins</h4>
+                    <span class="user-status"><i class="fa-solid fa-circle online-dot"></i> Synchronized</span>
+                </div>
+                <button class="icon-btn" id="theme-toggle" aria-label="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top App Bar -->
+            <header class="top-bar">
+                <div class="mobile-toggle">
+                    <button id="menu-btn" aria-label="Toggle Navigation Menu">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
+                </div>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Search symptoms, vitals history, or medications...">
+                </div>
+
+                <div class="top-actions">
+                    <button class="btn btn-glass" id="btn-quick-log">
+                        <i class="fa-solid fa-plus"></i> Quick Symptom Log
+                    </button>
+                    <button class="icon-btn notification-btn" id="btn-notifications" aria-label="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="pulse-indicator"></span>
+                    </button>
+                    <div class="date-badge" id="current-date-display">
+                        <i class="fa-regular fa-calendar-days"></i> Loading date...
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content Scroll Container -->
+            <div class="content-scroll">
+                <!-- Welcome Banner -->
+                <section class="welcome-banner">
+                    <div class="banner-text">
+                        <h1>Good Day, <span class="gradient-text">Sarah</span> 👋</h1>
+                        <p>Your biometric vitals are stable. Next medication in <strong>45 minutes</strong>.</p>
+                    </div>
+                    <div class="banner-stats">
+                        <div class="quick-stat">
+                            <span class="stat-label">Hydration</span>
+                            <span class="stat-value" id="hydration-stat">2.2 / 3.0 L</span>
+                            <div class="progress-bar-sm"><div class="progress-fill" style="width: 73%;"></div></div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="stat-label">Daily Streak</span>
+                            <span class="stat-value">14 Days 🔥</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Key Vitals Metrics Grid -->
+                <section class="vitals-grid">
+                    <div class="vital-card gradient-border" id="card-heartbeat">
+                        <div class="vital-header">
+                            <div class="vital-icon heart-bg">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                            </div>
+                            <div class="vital-trend trend-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> Normal
+                            </div>
+                        </div>
+                        <div class="vital-body">
+                            <h3>Heart Rate</h3>
+                            <div class="vital-number">
+                                <span id="val-heart">72</span> <small>bpm</small>
+                            </div>
+                            <div class="sparkline-container">
+                                <svg class="sparkline" viewBox="0 0 100 30">
+                                    <path d="M0,15 Q10,12 20,18 T40,10 T60,20 T80,12 T100,15" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="vital-footer">Resting average 68 bpm</div>
+                    </div>
+
+                    <div class="vital-card gradient-border" id="card-bp">
+                        <div class="vital-header">
+                            <div class="vital-icon bp-bg">
+                                <i class="fa-solid fa-gauge-high"></i>
+                            </div>
+                            <div class="vital-trend trend-stable">
+                                <i class="fa-solid fa-check"></i> Optimal
+                            </div>
+                        </div>
+                        <div class="vital-body">
+                            <h3>Blood Pressure</h3>
+                            <div class="vital-number">
+                                <span id="val-bp">118/78</span> <small>mmHg</small>
+                            </div>
+                            <div class="sparkline-container">
+                                <svg class="sparkline" viewBox="0 0 100 30">
+                                    <path d="M0,20 Q15,10 30,22 T60,15 T80,18 T100,14" fill="none" stroke="#06b6d4" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="vital-footer">Systolic / Diastolic target</div>
+                    </div>
+
+                    <div class="vital-card gradient-border" id="card-oxygen">
+                        <div class="vital-header">
+                            <div class="vital-icon spo2-bg">
+                                <i class="fa-solid fa-lungs"></i>
+                            </div>
+                            <div class="vital-trend trend-stable">
+                                <i class="fa-solid fa-shield-halved"></i> Excellent
+                            </div>
+                        </div>
+                        <div class="vital-body">
+                            <h3>SpO2 Oxygen</h3>
+                            <div class="vital-number">
+                                <span id="val-spo2">99</span> <small>%</small>
+                            </div>
+                            <div class="sparkline-container">
+                                <svg class="sparkline" viewBox="0 0 100 30">
+                                    <path d="M0,10 Q25,12 50,11 T75,10 T100,11" fill="none" stroke="#10b981" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="vital-footer">Blood oxygen saturation</div>
+                    </div>
+
+                    <div class="vital-card gradient-border" id="card-sleep">
+                        <div class="vital-header">
+                            <div class="vital-icon sleep-bg">
+                                <i class="fa-solid fa-bed"></i>
+                            </div>
+                            <div class="vital-trend trend-up">
+                                <i class="fa-solid fa-plus"></i> +45m vs avg
+                            </div>
+                        </div>
+                        <div class="vital-body">
+                            <h3>Sleep Quality</h3>
+                            <div class="vital-number">
+                                <span id="val-sleep">7.8</span> <small>hrs</small>
+                            </div>
+                            <div class="sparkline-container">
+                                <svg class="sparkline" viewBox="0 0 100 30">
+                                    <path d="M0,25 Q20,18 40,24 T60,10 T80,15 T100,20" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="vital-footer">32% Deep REM Sleep</div>
+                    </div>
+                </section>
+
+                <!-- Section: Interactive Symptom Logger & History Grid -->
+                <section class="section-grid" id="symptom-section">
+                    <!-- Symptom Entry Form Card -->
+                    <div class="glass-card form-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-notes-medical icon-accent"></i> Log New Symptom</h3>
+                                <p class="card-subtitle">Track physical feelings, severity, and triggers</p>
+                            </div>
+                        </div>
+                        <form id="symptom-form" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="symptom-select">Select or Type Symptom</label>
+                                <div class="chip-selector" id="symptom-chips">
+                                    <span class="chip active" data-val="Headache">Headache</span>
+                                    <span class="chip" data-val="Fatigue">Fatigue</span>
+                                    <span class="chip" data-val="Cough">Cough</span>
+                                    <span class="chip" data-val="Fever">Fever</span>
+                                    <span class="chip" data-val="Dizziness">Dizziness</span>
+                                    <span class="chip" data-val="Joint Pain">Joint Pain</span>
+                                </div>
+                                <input type="text" id="symptom-custom-input" placeholder="Or type a custom symptom name..." class="form-control">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label for="severity-range">Severity Level: <strong id="severity-num" class="sev-mild">3 (Mild)</strong></label>
+                                    <input type="range" id="severity-range" min="1" max="10" value="3" class="range-slider">
+                                    <div class="range-labels">
+                                        <span>1 (Mild)</span>
+                                        <span>5 (Moderate)</span>
+                                        <span>10 (Severe)</span>
+                                    </div>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="symptom-location">Body Region</label>
+                                    <select id="symptom-location" class="form-control">
+                                        <option value="Head & Neck">Head & Neck</option>
+                                        <option value="Chest & Lungs">Chest & Lungs</option>
+                                        <option value="Abdomen">Abdomen & Gut</option>
+                                        <option value="Limbs & Joints">Limbs & Joints</option>
+                                        <option value="General Body">General Body</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="symptom-notes">Notes & Potential Triggers</label>
+                                <textarea id="symptom-notes" rows="2" placeholder="e.g. Started after working late on computer, light sensitivity..." class="form-control"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block" id="btn-save-symptom">
+                                <i class="fa-solid fa-floppy-disk"></i> Record Symptom Entry
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Recent Symptom Timeline Card -->
+                    <div class="glass-card timeline-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left icon-accent"></i> Recent Activity Log</h3>
+                                <p class="card-subtitle">Your latest logged health updates</p>
+                            </div>
+                            <button class="btn btn-sm btn-outline" id="btn-clear-history">Clear All</button>
+                        </div>
+                        
+                        <div class="timeline-list" id="symptom-history-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Vitals Analytics Chart & Water Log -->
+                <section class="section-grid vitals-chart-grid" id="analytics-section">
+                    <!-- Interactive Vitals Trend Chart Card -->
+                    <div class="glass-card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-chart-line icon-accent"></i> Biometric Trends Analytics</h3>
+                                <p class="card-subtitle">24-Hour continuous monitor data</p>
+                            </div>
+                            <div class="tab-filters" id="chart-tabs">
+                                <button class="tab-btn active" data-metric="heart">Heart Rate</button>
+                                <button class="tab-btn" data-metric="bp">BP Trend</button>
+                                <button class="tab-btn" data-metric="spo2">SpO2 Level</button>
+                            </div>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <svg class="interactive-chart" id="vitals-chart-svg" viewBox="0 0 600 220" preserveAspectRatio="none">
+                                <!-- Grid Lines -->
+                                <line x1="40" y1="30" x2="580" y2="30" class="chart-grid-line" />
+                                <line x1="40" y1="80" x2="580" y2="80" class="chart-grid-line" />
+                                <line x1="40" y1="130" x2="580" y2="130" class="chart-grid-line" />
+                                <line x1="40" y1="180" x2="580" y2="180" class="chart-grid-line" />
+                                
+                                <!-- Gradient Fill Definition -->
+                                <defs>
+                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4"/>
+                                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                
+                                <!-- Area Path -->
+                                <path id="chart-area" d="M40,140 L110,120 L190,160 L280,90 L370,110 L460,70 L550,100 L550,180 L40,180 Z" fill="url(#chartGradient)"/>
+                                <!-- Main Polyline -->
+                                <path id="chart-line" d="M40,140 L110,120 L190,160 L280,90 L370,110 L460,70 L550,100" fill="none" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round"/>
+
+                                <!-- Data Circles -->
+                                <g id="chart-points">
+                                    <circle cx="40" cy="140" r="5" class="chart-point" data-val="68 bpm at 06:00 AM"></circle>
+                                    <circle cx="110" cy="120" r="5" class="chart-point" data-val="72 bpm at 09:00 AM"></circle>
+                                    <circle cx="190" cy="160" r="5" class="chart-point" data-val="64 bpm at 12:00 PM"></circle>
+                                    <circle cx="280" cy="90" r="5" class="chart-point" data-val="84 bpm at 03:00 PM"></circle>
+                                    <circle cx="370" cy="110" r="5" class="chart-point" data-val="76 bpm at 06:00 PM"></circle>
+                                    <circle cx="460" cy="70" r="5" class="chart-point" data-val="90 bpm at 08:00 PM"></circle>
+                                    <circle cx="550" cy="100" r="5" class="chart-point" data-val="75 bpm at 10:00 PM"></circle>
+                                </g>
+                            </svg>
+                            <div class="chart-tooltip" id="chart-tooltip">Hover over points</div>
+                        </div>
+                        <div class="chart-labels">
+                            <span>06:00 AM</span>
+                            <span>09:00 AM</span>
+                            <span>12:00 PM</span>
+                            <span>03:00 PM</span>
+                            <span>06:00 PM</span>
+                            <span>08:00 PM</span>
+                            <span>10:00 PM</span>
+                        </div>
+                    </div>
+
+                    <!-- Hydration & Medications Tracker Card -->
+                    <div class="glass-card side-tracker-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title"><i class="fa-solid fa-glass-water icon-accent"></i> Hydration & Meds</h3>
+                                <p class="card-subtitle">Daily intake targets</p>
+                            </div>
+                        </div>
+
+                        <!-- Hydration Tracker -->
+                        <div class="hydration-widget">
+                            <div class="water-header">
+                                <div>
+                                    <span class="widget-title">Water Target</span>
+                                    <h2 id="water-text-display">2,250 / 3,000 ml</h2>
+                                </div>
+                                <button class="btn btn-sm btn-primary" id="btn-add-water">
+                                    <i class="fa-solid fa-plus"></i> +250 ml
+                                </button>
+                            </div>
+                            <div class="water-progress-track">
+                                <div class="water-fill" id="water-fill-bar" style="width: 75%;"></div>
+                            </div>
+                            <div class="water-cups" id="water-cups-grid">
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup active"></i>
+                                <i class="fa-solid fa-glass-water cup"></i>
+                                <i class="fa-solid fa-glass-water cup"></i>
+                            </div>
+                        </div>
+
+                        <hr class="card-divider">
+
+                        <!-- Today's Medication Checklist -->
+                        <div class="meds-widget">
+                            <h4 class="widget-subheading"><i class="fa-solid fa-pills text-purple"></i> Schedule for Today</h4>
+                            <ul class="med-list" id="med-list">
+                                <li class="med-item checked">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" checked data-med="Multivitamin">
+                                        <span class="checkmark"></span>
+                                        <div class="med-info">
+                                            <strong>Multivitamin Complex</strong>
+                                            <span>1 Capsule • 08:00 AM (Taken)</span>
+                                        </div>
+                                    </label>
+                                </li>
+                                <li class="med-item">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" id="chk-omega" data-med="Omega3">
+                                        <span class="checkmark"></span>
+                                        <div class="med-info">
+                                            <strong>Omega-3 Fish Oil 1000mg</strong>
+                                            <span>1 Softgel • 01:00 PM</span>
+                                        </div>
+                                    </label>
+                                </li>
+                                <li class="med-item">
+                                    <label class="custom-checkbox">
+                                        <input type="checkbox" id="chk-magnesium" data-med="Magnesium">
+                                        <span class="checkmark"></span>
+                                        <div class="med-info">
+                                            <strong>Magnesium Glycinate</strong>
+                                            <span>200mg • 09:30 PM</span>
+                                        </div>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Floating AI Assistant Button & Drawer -->
+        <button class="ai-fab" id="ai-fab-btn" title="Ask Vitalis AI Health Assistant">
+            <i class="fa-solid fa-robot"></i>
+            <span class="fab-ping"></span>
+        </button>
+
+        <div class="ai-chat-drawer" id="ai-chat-drawer">
+            <div class="chat-header">
+                <div class="chat-bot-info">
+                    <div class="bot-avatar">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h4>Vitalis Health AI</h4>
+                        <span class="bot-status"><i class="fa-solid fa-circle text-emerald"></i> Online • Medical Assistant</span>
+                    </div>
+                </div>
+                <button class="icon-btn" id="close-chat-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message msg-bot">
+                    <div class="msg-bubble">
+                        Hello Sarah! 👋 I'm your Vitalis AI Assistant. I can help analyze symptom patterns, explain vitals, or give wellness recommendations. How are you feeling today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-quick-prompts">
+                <button class="chip prompt-chip" data-prompt="Analyze my recent headache entries">Headache Analysis</button>
+                <button class="chip prompt-chip" data-prompt="How is my blood pressure 118/78?">Explain Blood Pressure</button>
+                <button class="chip prompt-chip" data-prompt="Give me 3 tips to improve REM sleep">Sleep Advice</button>
+            </div>
+
+            <form class="chat-input-area" id="chat-form" onsubmit="return false;">
+                <input type="text" id="chat-input" placeholder="Ask Vitalis AI anything about your health..." autocomplete="off">
+                <button type="submit" class="btn btn-primary icon-only-btn" id="send-chat-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Custom Script -->
+    <script src="app.js"></script>
+</body>
+</html>

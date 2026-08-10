@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Device App Holder & Simulator Shell</title>
+    <meta name="description" content="Interactive device frame mockup holder for testing and presenting web & mobile apps inside realistic iPhone, Android, and iPad frames.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-canvas">
+    <!-- Top Control Bar -->
+    <header class="holder-header">
+        <div class="header-brand">
+            <div class="brand-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div>
+                <h1>AppHolder<span class="badge">PRO</span></h1>
+                <p>Device Mockup & Interactive Studio Shell</p>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <!-- Device Selector -->
+            <div class="control-group">
+                <label><i class="fa-solid fa-mobile-button"></i> Device:</label>
+                <div class="btn-group" id="device-selector">
+                    <button class="ctrl-btn active" data-device="iphone-15-pro">iPhone 15 Pro</button>
+                    <button class="ctrl-btn" data-device="galaxy-s24">Galaxy S24</button>
+                    <button class="ctrl-btn" data-device="ipad-pro">iPad Pro</button>
+                    <button class="ctrl-btn" data-device="full-responsive">Responsive</button>
+                </div>
+            </div>
+
+            <!-- Color Finish Selector -->
+            <div class="control-group">
+                <label><i class="fa-solid fa-palette"></i> Finish:</label>
+                <div class="color-picker" id="color-picker">
+                    <span class="color-dot active color-titanium" data-color="titanium" title="Natural Titanium"></span>
+                    <span class="color-dot color-black" data-color="black" title="Space Black"></span>
+                    <span class="color-dot color-blue" data-color="blue" title="Deep Blue"></span>
+                    <span class="color-dot color-gold" data-color="gold" title="Desert Gold"></span>
+                </div>
+            </div>
+
+            <!-- Orientation & Tools -->
+            <div class="control-group">
+                <button class="icon-ctrl-btn" id="btn-rotate" title="Rotate Device (Portrait/Landscape)">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+                <button class="icon-ctrl-btn" id="btn-theme" title="Toggle Canvas Background">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+                <button class="icon-ctrl-btn" id="btn-reload" title="Reload Frame Content">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Source URL Input Bar -->
+    <div class="url-bar">
+        <div class="url-input-container">
+            <i class="fa-solid fa-lock text-success"></i>
+            <span class="url-prefix">URL:</span>
+            <input type="text" id="app-url-input" value="../vitalis_health_dashboard/index.html" placeholder="Enter web app path or URL...">
+            <button class="btn btn-sm btn-primary" id="btn-load-url">
+                <i class="fa-solid fa-arrow-right"></i> Load App
+            </button>
+        </div>
+        <div class="quick-presets">
+            <span class="preset-label">Presets:</span>
+            <button class="chip-preset" data-url="../vitalis_health_dashboard/index.html">Vitalis Dashboard</button>
+            <button class="chip-preset" data-url="../symptotrack/index.html">SymtoTrack Web</button>
+            <button class="chip-preset" data-url="https://example.com">External URL</button>
+        </div>
+    </div>
+
+    <!-- Main Canvas Studio Stage -->
+    <main class="studio-stage" id="studio-stage">
+        <!-- Device Frame Wrapper Container -->
+        <div class="device-frame iphone-15-pro titanium portrait" id="device-wrapper">
+            
+            <!-- Side Physical Buttons (Decorative CSS) -->
+            <div class="side-button action-btn"></div>
+            <div class="side-button vol-up"></div>
+            <div class="side-button vol-down"></div>
+            <div class="side-button power-btn"></div>
+
+            <!-- Screen Container Outer -->
+            <div class="screen-bezel">
+                
+                <!-- Dynamic Island / Camera Cutout Notch -->
+                <div class="dynamic-island" id="dynamic-island">
+                    <div class="camera-lens"></div>
+                    <div class="sensor-dot"></div>
+                </div>
+
+                <!-- Phone Status Bar -->
+                <div class="status-bar" id="status-bar">
+                    <div class="status-time" id="status-time">9:41</div>
+                    <div class="status-icons">
+                        <i class="fa-solid fa-signal"></i>
+                        <i class="fa-solid fa-wifi"></i>
+                        <i class="fa-solid fa-battery-full text-green"></i>
+                    </div>
+                </div>
+
+                <!-- Embedded App Screen iframe -->
+                <iframe src="../vitalis_health_dashboard/index.html" id="app-iframe" title="App Preview Frame" allow="geolocation; camera; microphone"></iframe>
+
+                <!-- iOS Home Indicator Bar -->
+                <div class="home-indicator" id="home-indicator"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Stats & Info -->
+    <footer class="holder-footer">
+        <div>
+            <span class="info-tag"><i class="fa-solid fa-expand"></i> Dimensions: <strong id="screen-dim-text">393 x 852 px</strong></span>
+            <span class="info-tag"><i class="fa-solid fa-display"></i> Viewport Scale: <strong>100%</strong></span>
+        </div>
+        <div class="stage-watermark">
+            <span>Powered by AppHolder Container Shell</span>
+        </div>
+    </footer>
+
+    <!-- Script -->
+    <script src="holder.js"></script>
+</body>
+</html>
