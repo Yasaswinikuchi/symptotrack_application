@@ -92,6 +92,15 @@ window.runAIAnalysis = function() {
         };
     }
 
+    // Send Live Webpage Input to Python Naive Bayes Backend Log
+    try {
+        fetch('/api/analyze-symptoms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ symptomsText, patientAge: age, patientGender: gender, preExistingConditions: conditionsStr })
+        }).catch(e => console.log('Live server logging:', e));
+    } catch (err) {}
+
     // Save to history unless Incognito Mode is active
     const isIncognito = localStorage.getItem('symtotrack_sec_incognito') === 'true';
     if (!isIncognito) {

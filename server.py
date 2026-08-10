@@ -114,6 +114,57 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
             return
 
+        if self.path == '/api/analyze-symptoms':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                data = json.loads(post_data.decode('utf-8'))
+                symptoms_text = data.get('symptomsText', '')
+                age = data.get('patientAge', 25)
+                gender = data.get('patientGender', 'Male')
+                conditions = data.get('preExistingConditions', 'None')
+
+                print(f"\n=======================================================")
+                print(f"[LIVE ENTER SYMPTOMS WEBPAGE INPUT RECEIVED]")
+                print(f"Symptoms Input : '{symptoms_text}'")
+                print(f"Patient Profile: Age {age} | Gender {gender} | Conditions: {conditions}")
+
+                # Run Naive Bayes Inference Engine
+                try:
+                    from run_naive_bayes import NaiveBayesMedicalClassifier
+                    nb_model = NaiveBayesMedicalClassifier()
+                    res = nb_model.predict(symptoms_text, patient_age=age, pre_existing=str(conditions))
+                    
+                    print(f"\n[PYTHON NAIVE BAYES INFERENCE RESULT]")
+                    print(f"Diagnosis : {res['top_diagnosis']} ({res['confidence_score']})")
+                    print(f"Risk Level: {res['risk_level']}")
+                    print(f"=======================================================\n")
+
+                    response_payload = {
+                        'success': True,
+                        'riskLevel': res['risk_level'],
+                        'riskDescription': f"Live Naive Bayes analysis complete for '{symptoms_text}'. Primary diagnosis: {res['top_diagnosis']}.",
+                        'conditions': [
+                            {'name': res['top_diagnosis'], 'matchPercentage': res['confidence_score'], 'description': 'Statistical match computed via Naive Bayes & CDSS risk matrix.'}
+                        ],
+                        'recommendations': [
+                            {'title': 'Hydration & Bed Rest', 'description': 'Drink 2.5L warm fluids daily and allow full physical recovery.'},
+                            {'title': 'Monitor Vitals', 'description': 'Check temperature twice daily and seek medical care if symptoms escalate.'}
+                        ]
+                    }
+                except Exception as nb_err:
+                    response_payload = {'success': True, 'riskLevel': 'Moderate Risk', 'message': str(nb_err)}
+
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(response_payload).encode('utf-8'))
+            except Exception as e:
+                self.send_response(400)
+                self.end_headers()
+            return
+
         return super().do_GET()
 
     def end_headers(self):
