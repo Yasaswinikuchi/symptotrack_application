@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Interactive Runtime Input Naive Bayes Classifier Engine (R)
-# Guaranteed Variable Definition & Safe Readline Prompts
+# SymptoTrack Pro - Pure Dynamic Naive Bayes Medical Classifier Engine (R)
+# ZERO hardcoded default strings. Takes inputs 100% dynamically.
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -17,19 +17,8 @@ if (!file.exists(json_path)) {
 raw_json_text <- paste(readLines(json_path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
 dataset <- fromJSON(raw_json_text)
 
-# 2. Dynamic Classification Function
-predict_symptoms <- function(symptom_text = "i am having fever from last 15 days and vomiting", 
-                             patient_age = 90, 
-                             patient_gender = "Female", 
-                             pre_existing = "Diabetes, Asthma, cancer, Hypertension") {
-  
-  # Ensure inputs are valid strings/numbers
-  if (is.null(symptom_text) || nchar(trimws(symptom_text)) == 0) {
-    symptom_text <- "i am having fever from last 15 days and vomiting"
-  }
-  if (is.null(patient_age) || is.na(patient_age)) patient_age <- 90
-  if (is.null(patient_gender) || nchar(trimws(patient_gender)) == 0) patient_gender <- "Female"
-  if (is.null(pre_existing) || nchar(trimws(pre_existing)) == 0) pre_existing <- "Diabetes, Asthma, cancer, Hypertension"
+# 2. Pure Dynamic Classifier Function (NO DEFAULT STRINGS AT ALL)
+predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_existing) {
   
   raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
   tokens <- raw_tokens[nchar(raw_tokens) > 2]
@@ -65,7 +54,7 @@ predict_symptoms <- function(symptom_text = "i am having fever from last 15 days
   }
   
   cat("\n=================================================================\n")
-  cat("📥 RUNTIME INPUT PROCESSED:\n")
+  cat("📥 DYNAMIC INPUT PROCESSED:\n")
   cat("  • Describe how you feel  :", symptom_text, "\n")
   cat("  • Patient Age            :", patient_age, "\n")
   cat("  • Patient Gender         :", patient_gender, "\n")
@@ -81,30 +70,14 @@ predict_symptoms <- function(symptom_text = "i am having fever from last 15 days
   return(invisible(df_results))
 }
 
-# 3. Safe Interactive Session Function
-run_interactive_r_session <- function() {
-  cat("=================================================================\n")
-  cat("🧠 SymptoTrack Pro - RStudio Interactive Runtime Input Classifier\n")
-  cat("=================================================================\n\n")
-
-  symptom_input <- readline(prompt = "Enter symptoms (Describe how you feel): ")
-  age_input     <- readline(prompt = "Enter patient age (default 90): ")
-  gender_input  <- readline(prompt = "Enter patient gender (Female/Male): ")
-  cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
-
-  # Safe fallbacks for every variable
-  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "i am having fever from last 15 days and vomiting"
-  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 90
-  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
-  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "Diabetes, Asthma, cancer, Hypertension"
-
+# 3. Read Live Webpage Submissions dynamically from live_webpage_inputs.json
+live_input_file <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/live_webpage_inputs.json"
+if (file.exists(live_input_file)) {
+  live_data <- fromJSON(live_input_file)
   predict_symptoms(
-    symptom_text = sym_val,
-    patient_age = age_val,
-    patient_gender = gen_val,
-    pre_existing = cnd_val
+    symptom_text = live_data$symptomsText,
+    patient_age = as.numeric(live_data$patientAge),
+    patient_gender = live_data$patientGender,
+    pre_existing = live_data$preExistingConditions
   )
 }
-
-# Execute prediction immediately with safe fallbacks
-predict_symptoms()
