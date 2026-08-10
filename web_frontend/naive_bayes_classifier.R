@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Naive Bayes Medical Classifier Engine (R Language)
-# Reads Master Dataset & Runs Naive Bayes Inference on Enter Symptoms Inputs
+# SymptoTrack Pro - Pure Dynamic Naive Bayes Medical Classifier Engine (R)
+# NO hardcoded inputs. Reads live submissions from webpage JSON / function arguments.
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -8,45 +8,36 @@ if (!require("jsonlite")) {
   library(jsonlite)
 }
 
-# 1. Load Master Dataset reliably using absolute path and readLines
+# 1. Load Master Dataset
 json_path <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/master_symptom_disease_dataset.json"
 if (!file.exists(json_path)) {
-  json_path <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/master_symptom_disease_dataset.json"
+  json_path <- "master_symptom_disease_dataset.json"
 }
 
 raw_json_text <- paste(readLines(json_path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
-data <- fromJSON(raw_json_text)
+dataset <- fromJSON(raw_json_text)
 
-# 2. Extract Webpage Form Inputs (EXACT MATCH FROM WEBPAGE SCREENSHOT)
-symptom_description <- "i am having fever from last 15 days and vomiting"
-patient_age <- 90
-patient_gender <- "Female"
-pre_existing_conditions <- "Diabetes, Asthma, cancer, Hypertension"
-
-cat("=================================================================\n")
-cat("SymptoTrack Pro - Naive Bayes Classifier Engine (RStudio Edition)\n")
-cat("=================================================================\n\n")
-
-cat("📥 WEBPAGE FORM INPUT PARAMETERS (CAPTURED FROM SCREENSHOT):\n")
-cat("  • Describe how you feel  :", symptom_description, "\n")
-cat("  • Patient Age            :", patient_age, "\n")
-cat("  • Patient Gender         :", patient_gender, "\n")
-cat("  • Pre-existing Conditions:", pre_existing_conditions, "\n\n")
-
-# 3. Naive Bayes Classification Matcher
-predict_symptoms <- function(text, age, gender, conditions) {
-  raw_tokens <- unlist(strsplit(tolower(text), "\\s+"))
+# 2. Dynamic Classifier Function (NO Hardcoded Inputs)
+predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
+  
+  # Tokenize & clean input text
+  raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
   tokens <- raw_tokens[nchar(raw_tokens) > 2]
+  
+  # Synonym normalization
+  synonyms <- list(apatite = "appetite", feaver = "fever", temp = "fever", vomit = "vomiting")
+  tokens <- sapply(tokens, function(t) ifelse(t %in% names(synonyms), synonyms[[t]], t))
   
   scores <- c()
   disease_names <- c()
   
-  for (i in 1:nrow(data)) {
-    disease <- data$disease_name[i]
-    disease_symptoms <- unlist(data$symptoms[i])
+  # Naive Bayes Match Loop across all diseases
+  for (i in 1:nrow(dataset)) {
+    disease <- dataset$disease_name[i]
+    disease_symptoms <- unlist(dataset$symptoms[i])
     
     match_count <- sum(sapply(tokens, function(tok) any(grepl(tok, disease_symptoms))))
-    score <- log(1 / nrow(data)) + (match_count * 1.5)
+    score <- log(1 / nrow(dataset)) + (match_count * 1.5)
     
     scores <- c(scores, score)
     disease_names <- c(disease_names, disease)
@@ -57,21 +48,40 @@ predict_symptoms <- function(text, age, gender, conditions) {
   
   top_diagnosis <- df_results$Disease[1]
   
-  # Stratified CDSS Risk Calculation for Age 90 + Co-morbidities
-  risk_level <- "High Risk 🚨 (Elevated by Age 90, Diabetes, Asthma, Cancer, Hypertension)"
+  # Stratified CDSS Risk Calculation
+  risk_level <- "Moderate Risk"
+  cond_lower <- tolower(pre_existing)
+  if (grepl("asthma|hypertension|diabetes|cancer", cond_lower) || patient_age > 60) {
+    risk_level <- "High Risk 🚨 (Elevated by Age & Medical History)"
+  } else if (grepl("mild|runny nose", tolower(symptom_text))) {
+    risk_level <- "Low Risk"
+  }
   
+  cat("\n=================================================================\n")
+  cat("📥 DYNAMIC WEBPAGE SYMPTOM INPUT PROCESSED:\n")
+  cat("  • Textarea Input         :", symptom_text, "\n")
+  cat("  • Patient Age            :", patient_age, "\n")
+  cat("  • Patient Gender         :", patient_gender, "\n")
+  cat("  • Pre-existing Conditions:", pre_existing, "\n")
   cat("--------------------------------------------------\n")
   cat("🎯 Predicted Diagnosis :", top_diagnosis, "\n")
   cat("📊 Confidence Match   : 88% Match\n")
   cat("⚠️ Stratified Risk     :", risk_level, "\n")
-  cat("--------------------------------------------------\n\n")
-  
-  cat("Top Candidate Rankings (Matches Webpage Output):\n")
+  cat("--------------------------------------------------\n")
   print(head(df_results, 3))
   cat("=================================================================\n")
   
   return(invisible(df_results))
 }
 
-# 4. Execute Classifier
-predict_symptoms(symptom_description, patient_age, patient_gender, pre_existing_conditions)
+# 3. Read Live Webpage Submissions (If live_webpage_inputs.json exists)
+live_input_file <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/live_webpage_inputs.json"
+if (file.exists(live_input_file)) {
+  live_data <- fromJSON(live_input_file)
+  predict_symptoms(
+    symptom_text = live_data$symptomsText,
+    patient_age = as.numeric(live_data$patientAge),
+    patient_gender = live_data$patientGender,
+    pre_existing = live_data$preExistingConditions
+  )
+}
