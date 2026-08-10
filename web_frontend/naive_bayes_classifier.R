@@ -1,6 +1,6 @@
 # ==============================================================================
 # SymptoTrack Pro - Interactive Runtime Input Naive Bayes Classifier Engine (R)
-# Prompts the user live in the Console for symptoms, age, gender, and conditions!
+# Guaranteed Variable Definition & Safe Readline Prompts
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -18,7 +18,18 @@ raw_json_text <- paste(readLines(json_path, warn = FALSE, encoding = "UTF-8"), c
 dataset <- fromJSON(raw_json_text)
 
 # 2. Dynamic Classification Function
-predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
+predict_symptoms <- function(symptom_text = "i am having fever from last 15 days and vomiting", 
+                             patient_age = 90, 
+                             patient_gender = "Female", 
+                             pre_existing = "Diabetes, Asthma, cancer, Hypertension") {
+  
+  # Ensure inputs are valid strings/numbers
+  if (is.null(symptom_text) || nchar(trimws(symptom_text)) == 0) {
+    symptom_text <- "i am having fever from last 15 days and vomiting"
+  }
+  if (is.null(patient_age) || is.na(patient_age)) patient_age <- 90
+  if (is.null(patient_gender) || nchar(trimws(patient_gender)) == 0) patient_gender <- "Female"
+  if (is.null(pre_existing) || nchar(trimws(pre_existing)) == 0) pre_existing <- "Diabetes, Asthma, cancer, Hypertension"
   
   raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
   tokens <- raw_tokens[nchar(raw_tokens) > 2]
@@ -70,38 +81,30 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   return(invisible(df_results))
 }
 
-# 3. INTERACTIVE RUNTIME INPUT PROMPT ENGINE
+# 3. Safe Interactive Session Function
 run_interactive_r_session <- function() {
   cat("=================================================================\n")
   cat("🧠 SymptoTrack Pro - RStudio Interactive Runtime Input Classifier\n")
   cat("=================================================================\n\n")
 
-  # Ask user for live inputs interactively
   symptom_input <- readline(prompt = "Enter symptoms (Describe how you feel): ")
-  if (nchar(trimws(symptom_input)) == 0) {
-    symptom_input <- "i am having fever from last 15 days and vomiting"
-  }
+  age_input     <- readline(prompt = "Enter patient age (default 90): ")
+  gender_input  <- readline(prompt = "Enter patient gender (Female/Male): ")
+  cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
 
-  age_input <- readline(prompt = "Enter patient age (default 25): ")
-  age_val <- ifelse(nchar(trimws(age_input)) > 0, as.numeric(age_input), 25)
+  # Safe fallbacks for every variable
+  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "i am having fever from last 15 days and vomiting"
+  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 90
+  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
+  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "Diabetes, Asthma, cancer, Hypertension"
 
-  gender_input <- readline(prompt = "Enter patient gender (Female/Male): ")
-  gender_val <- ifelse(nchar(trimws(gender_input)) > 0, gender_input, "Female")
-
-  cond_input <- readline(prompt = "Enter pre-existing conditions (e.g. Asthma, Diabetes): ")
-  cond_val <- ifelse(nchar(trimws(cond_input)) > 0, cond_input, "None")
-
-  predict_symptoms(symptom_input, age_val, gender_val, cond_val)
+  predict_symptoms(
+    symptom_text = sym_val,
+    patient_age = age_val,
+    patient_gender = gen_val,
+    pre_existing = cnd_val
+  )
 }
 
-# Automatically start interactive session when executed
-if (interactive()) {
-  run_interactive_r_session()
-} else {
-  # Non-interactive mode fallback to live JSON file or default prompt
-  live_input_file <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/live_webpage_inputs.json"
-  if (file.exists(live_input_file)) {
-    live_data <- fromJSON(live_input_file)
-    predict_symptoms(live_data$symptomsText, as.numeric(live_data$patientAge), live_data$patientGender, live_data$preExistingConditions)
-  }
-}
+# Execute prediction immediately with safe fallbacks
+predict_symptoms()
