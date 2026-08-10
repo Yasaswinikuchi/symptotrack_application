@@ -20,7 +20,7 @@ dataset <- fromJSON(raw_json_text)
 # 2. Dynamic Classifier Function (NO Hardcoded Inputs)
 predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
   
-  # Tokenize & clean input text
+  # Clean & tokenize input text
   raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
   tokens <- raw_tokens[nchar(raw_tokens) > 2]
   
