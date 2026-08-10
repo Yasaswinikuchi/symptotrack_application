@@ -1,6 +1,6 @@
 # ==============================================================================
-# SymptoTrack Pro - Master All-in-One Naive Bayes Machine Learning & CDSS AI Engine
-# File: symptotrack_ai_engine.R (100% Pure R Language for RStudio)
+# SymptoTrack Pro - Master Interactive Runtime Input Naive Bayes AI Engine (R)
+# File: symptotrack_ai_engine.R (Prompts live in RStudio Console via readline)
 # ==============================================================================
 
 if (!require("jsonlite")) {
@@ -45,13 +45,11 @@ dataset_json_text <- '[
 dataset <- fromJSON(dataset_json_text)
 
 # 2. PURE R NAIVE BAYES & CDSS CLASSIFIER FUNCTION
-predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
+predict_symptoms <- function(symptom_text, patient_age, patient_gender, pre_existing) {
   
-  # Clean tokens
   raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
   tokens <- raw_tokens[nchar(raw_tokens) > 2]
   
-  # Synonym mapping
   synonyms <- list(apatite = "appetite", feaver = "fever", temp = "fever", vomit = "vomiting")
   tokens <- sapply(tokens, function(t) ifelse(t %in% names(synonyms), synonyms[[t]], t))
   
@@ -78,7 +76,6 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   top_diagnosis <- df_results$Disease[1]
   top_recommendation <- df_results$Recommendation[1]
   
-  # CDSS Risk Stratification
   risk_level <- "Moderate Risk"
   cond_lower <- tolower(pre_existing)
   if (grepl("asthma|hypertension|diabetes|cancer", cond_lower) || patient_age > 60) {
@@ -90,7 +87,7 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   cat("\n=================================================================\n")
   cat("🧠 SYMPTOTRACK PRO - DYNAMIC NAIVE BAYES & CDSS ANALYSIS OUTPUT\n")
   cat("=================================================================\n")
-  cat("📥 WEBPAGE FORM INPUT PROCESSED:\n")
+  cat("📥 RUNTIME INPUT PROCESSED:\n")
   cat("  • Describe how you feel  :", symptom_text, "\n")
   cat("  • Patient Age            :", patient_age, "\n")
   cat("  • Patient Gender         :", patient_gender, "\n")
@@ -107,25 +104,29 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   return(invisible(df_results))
 }
 
-# 3. DYNAMIC EXECUTION
-live_json_path <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/live_webpage_inputs.json"
-if (!file.exists(live_json_path)) {
-  live_json_path <- "live_webpage_inputs.json"
+# 3. INTERACTIVE RUNTIME INPUT ENGINE (READLINE PROMPTS)
+run_interactive_r_session <- function() {
+  cat("=================================================================\n")
+  cat("🧠 SymptoTrack Pro - RStudio Interactive Runtime Input Classifier\n")
+  cat("=================================================================\n\n")
+
+  symptom_input <- readline(prompt = "Enter symptoms (Describe how you feel): ")
+  age_input     <- readline(prompt = "Enter patient age: ")
+  gender_input  <- readline(prompt = "Enter patient gender: ")
+  cond_input    <- readline(prompt = "Enter pre-existing conditions: ")
+
+  sym_val <- if (nchar(trimws(symptom_input)) > 0) symptom_input else "i am having fever from last 15 days and vomiting"
+  age_val <- if (nchar(trimws(age_input)) > 0 && !is.na(as.numeric(age_input))) as.numeric(age_input) else 90
+  gen_val <- if (nchar(trimws(gender_input)) > 0) gender_input else "Female"
+  cnd_val <- if (nchar(trimws(cond_input)) > 0) cond_input else "Diabetes, Asthma, cancer, Hypertension"
+
+  predict_symptoms(
+    symptom_text = sym_val,
+    patient_age = age_val,
+    patient_gender = gen_val,
+    pre_existing = cnd_val
+  )
 }
 
-if (file.exists(live_json_path)) {
-  live_data <- fromJSON(live_json_path)
-  predict_symptoms(
-    symptom_text = live_data$symptomsText,
-    patient_age = as.numeric(live_data$patientAge),
-    patient_gender = live_data$patientGender,
-    pre_existing = live_data$preExistingConditions
-  )
-} else {
-  predict_symptoms(
-    symptom_text = "i am having fever from last 15 days and vomiting",
-    patient_age = 90,
-    patient_gender = "Female",
-    pre_existing = "Diabetes, Asthma, cancer, Hypertension"
-  )
-}
+# Execute interactive session
+run_interactive_r_session()
