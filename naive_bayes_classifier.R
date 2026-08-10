@@ -8,13 +8,14 @@ if (!require("jsonlite")) {
   library(jsonlite)
 }
 
-# 1. Load Master Dataset
-dataset_path <- "master_symptom_disease_dataset.json"
-if (!file.exists(dataset_path)) {
-  dataset_path <- "../master_symptom_disease_dataset.json"
+# 1. Load Master Dataset reliably using absolute path and readLines
+json_path <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/web_frontend/master_symptom_disease_dataset.json"
+if (!file.exists(json_path)) {
+  json_path <- "c:/Users/yasaswini kuchi/Downloads/SymtoTrack_Source/master_symptom_disease_dataset.json"
 }
 
-data <- fromJSON(dataset_path)
+raw_json_text <- paste(readLines(json_path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+data <- fromJSON(raw_json_text)
 
 # 2. Extract Webpage Form Inputs (EXACT MATCH FROM WEBPAGE SCREENSHOT)
 symptom_description <- "i am having fever from last 15 days and vomiting"
