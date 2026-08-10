@@ -1,23 +1,28 @@
 # ==============================================================================
-# SymptoTrack Pro - Dynamic Naive Bayes Medical Classifier Engine (R Language)
+# SymptoTrack Pro - Naive Bayes Medical Classifier Engine (R Language)
 # Reads Master Dataset & Runs Naive Bayes Inference on Live Symptom Inputs
 # ==============================================================================
 
-library(jsonlite)
+# Load JSON library
+if (!require("jsonlite")) {
+  install.packages("jsonlite", repos = "http://cran.us.r-project.org")
+  library(jsonlite)
+}
 
-# 1. Load Master Dataset
+# 1. Load Master Medical Dataset
 dataset_path <- "master_symptom_disease_dataset.json"
 if (!file.exists(dataset_path)) {
   dataset_path <- "../master_symptom_disease_dataset.json"
 }
 
+cat("Loading medical dataset from:", dataset_path, "\n")
 data <- fromJSON(dataset_path)
 
-# 2. Dynamic Input Function (Processes any symptom text, age, gender, and conditions)
-predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "Female", pre_existing = "None") {
+# 2. Dynamic Classification Function
+predict_symptoms <- function(symptom_text, patient_age = 21, patient_gender = "Female", pre_existing = "Asthma") {
   
   cat("\n=================================================================\n")
-  cat("📥 DYNAMIC WEBPAGE SYMPTOM INPUT RECEIVED:\n")
+  cat("📥 LIVE WEBPAGE SYMPTOM INPUT RECEIVED:\n")
   cat("  • 'Describe how you feel' Text :", symptom_text, "\n")
   cat("  • Patient Age                  :", patient_age, "\n")
   cat("  • Patient Gender               :", patient_gender, "\n")
@@ -25,13 +30,17 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   cat("=================================================================\n")
 
   # Tokenize & clean input text
-  tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
-  tokens <- tokens[nchar(tokens) > 2]
+  raw_tokens <- unlist(strsplit(tolower(symptom_text), "\\s+"))
+  tokens <- raw_tokens[nchar(raw_tokens) > 2]
+  
+  # Synonym normalization (e.g. apatite -> appetite)
+  synonyms <- list(apatite = "appetite", feaver = "fever", temp = "fever")
+  tokens <- sapply(tokens, function(t) ifelse(t %in% names(synonyms), synonyms[[t]], t))
   
   scores <- c()
   disease_names <- c()
   
-  # Naive Bayes Match Loop
+  # Naive Bayes Match Loop across all diseases
   for (i in 1:nrow(data)) {
     disease <- data$disease_name[i]
     disease_symptoms <- unlist(data$symptoms[i])
@@ -43,8 +52,8 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
     disease_names <- c(disease_names, disease)
   }
   
-  df_results <- data.frame(Disease = disease_names, Score = scores)
-  df_results <- df_results[order(-df_results$Score), ]
+  df_results <- data.frame(Disease = disease_names, LogScore = scores)
+  df_results <- df_results[order(-df_results$LogScore), ]
   
   top_diagnosis <- df_results$Disease[1]
   
@@ -52,7 +61,7 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   risk_level <- "Moderate Risk"
   cond_lower <- tolower(pre_existing)
   if (grepl("asthma|hypertension", cond_lower) || patient_age > 60) {
-    risk_level <- "Moderate to High Risk (Elevated by History)"
+    risk_level <- "Moderate Risk (Elevated by Asthma)"
   } else if (grepl("mild|runny nose", tolower(symptom_text))) {
     risk_level <- "Low Risk"
   }
@@ -70,8 +79,7 @@ predict_symptoms <- function(symptom_text, patient_age = 25, patient_gender = "F
   return(invisible(df_results))
 }
 
-# 3. Example Execution call (Pass any text here)
-# Change the string below to test any symptom input:
+# 3. Execute Classifier on 'Describe how you feel' input
 predict_symptoms(
   symptom_text = "i am having fever from 3 days",
   patient_age = 21,
