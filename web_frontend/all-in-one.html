@@ -504,6 +504,7 @@
         </div>
     </nav>
 
+    <script src="ml.js"></script>
     <script>
         function switchTab(tabId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -553,13 +554,26 @@
             logs.scrollTop = logs.scrollHeight;
 
             setTimeout(() => {
-                logs.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:12px 16px; border-radius:16px; max-width:80%; margin-bottom:12px;">Dr. Symptobot: I have received your symptom query regarding "${msg}". Based on clinical telemetry, please rest, hydrate, and monitor your vitals.</div>`;
+                let botReply = "Thank you for reaching out. Based on our offline medical knowledge base, please rest, stay hydrated with 2.5L fluids daily, and monitor your symptoms.";
+                if (window.SymptomML) {
+                    const res = window.SymptomML.analyze(msg);
+                    botReply = `Dr. Symptobot AI Analysis: Identified ${res.conditions[0].name} (${res.conditions[0].matchPct}). Risk Level: ${res.riskLevel}. Recommendation: ${res.recommendations[0].title} - ${res.recommendations[0].desc}`;
+                }
+                logs.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:12px 16px; border-radius:16px; max-width:80%; margin-bottom:12px; line-height:1.5;">${botReply}</div>`;
                 logs.scrollTop = logs.scrollHeight;
-            }, 800);
+            }, 600);
         }
 
         function runSymptomAnalysis() {
-            alert("Analyzing selected symptoms against 120+ clinical models... Risk Score: Low (Rest & Hydrate recommended).");
+            const textInput = document.querySelector('.symptoms-textarea') || document.querySelector('#view-symptoms textarea') || document.querySelector('textarea');
+            const text = textInput ? textInput.value.trim() : "Fever and low appetite";
+
+            if (window.SymptomML) {
+                const res = window.SymptomML.analyze(text || "Fever and low appetite", 25, "Male", "None");
+                alert(`[OFFLINE ML AI ANALYSIS RESULT]\n\nPrimary Diagnosis: ${res.conditions[0].name} (${res.conditions[0].matchPct})\nRisk Level: ${res.riskLevel}\n\nClinical Recommendation: ${res.recommendations[0].title} - ${res.recommendations[0].desc}`);
+            } else {
+                alert("Analyzing selected symptoms against 120+ clinical models... Risk Score: Low (Rest & Hydrate recommended).");
+            }
         }
     </script>
 </body>

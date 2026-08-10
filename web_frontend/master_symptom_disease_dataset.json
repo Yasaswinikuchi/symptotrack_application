@@ -1,0 +1,87 @@
+[
+  {
+    "id": "DIS_001",
+    "disease_name": "Viral Influenza / Seasonal Flu",
+    "category": "Infectious Viral Respiratory",
+    "symptoms": ["fever", "fatigue", "chills", "body pain", "headache", "cough", "low appetite", "sore throat", "weakness"],
+    "symptom_weights": { "fever": 0.9, "fatigue": 0.8, "chills": 0.85, "body pain": 0.8, "headache": 0.7, "cough": 0.75, "low appetite": 0.7, "sore throat": 0.65 },
+    "base_risk_level": "Moderate Risk",
+    "target_age_group": "All Ages",
+    "precautions": ["Stay hydrated", "Get 8+ hours sleep", "Avoid public exposure", "Monitor body temp"],
+    "recommendations": [
+      { "title": "Hydration & Fluids", "desc": "Drink 2.5–3 liters of warm water, clear soups, or ORS daily." },
+      { "title": "Adequate Bed Rest", "desc": "Allow physical recovery with uninterrupted rest." },
+      { "title": "OTC Pain & Fever Relief", "desc": "Consider Paracetamol 650mg after doctor consultation if temperature exceeds 100.5°F." }
+    ]
+  },
+  {
+    "id": "DIS_002",
+    "disease_name": "Acute Upper Respiratory Tract Infection",
+    "category": "Respiratory Infection",
+    "symptoms": ["cough", "sore throat", "runny nose", "sneezing", "nasal congestion", "phlegm", "hoarseness", "mild fever"],
+    "symptom_weights": { "cough": 0.85, "sore throat": 0.9, "runny nose": 0.8, "sneezing": 0.75, "nasal congestion": 0.8 },
+    "base_risk_level": "Low Risk",
+    "target_age_group": "All Ages",
+    "precautions": ["Salt water gargle", "Steam inhalation", "Avoid cold drinks"],
+    "recommendations": [
+      { "title": "Warm Steam Inhalation", "desc": "Perform steam inhalation twice daily for 5-10 minutes." },
+      { "title": "Salt Water Gargle", "desc": "Gargle warm saline water 3 times daily to relieve mucosal soreness." }
+    ]
+  },
+  {
+    "id": "DIS_003",
+    "disease_name": "Migraine / Tension Headache Syndrome",
+    "category": "Neurological / Muscular",
+    "symptoms": ["headache", "nausea", "light sensitivity", "throbbing pain", "dizziness", "neck pain", "vision blur", "stress"],
+    "symptom_weights": { "headache": 0.95, "nausea": 0.75, "light sensitivity": 0.85, "throbbing pain": 0.9 },
+    "base_risk_level": "Moderate Risk",
+    "target_age_group": "Adults (15-60)",
+    "precautions": ["Avoid screen glare", "Hydrate immediately", "Rest in dark quiet room"],
+    "recommendations": [
+      { "title": "Dark Room Relaxation", "desc": "Rest in a quiet, dark room away from mobile screens." },
+      { "title": "Cold Compress", "desc": "Apply an ice pack or cool cloth to temples for 15 minutes." }
+    ]
+  },
+  {
+    "id": "DIS_004",
+    "disease_name": "Acute Gastroenteritis / Dyspepsia",
+    "category": "Gastrointestinal",
+    "symptoms": ["stomach pain", "nausea", "vomiting", "diarrhea", "low appetite", "bloating", "cramps", "acidity"],
+    "symptom_weights": { "stomach pain": 0.9, "nausea": 0.8, "vomiting": 0.85, "diarrhea": 0.9, "low appetite": 0.75 },
+    "base_risk_level": "Moderate Risk",
+    "target_age_group": "All Ages",
+    "precautions": ["BRAT diet (Banana, Rice, Apple, Toast)", "Electrolyte sips", "Avoid spicy foods"],
+    "recommendations": [
+      { "title": "Electrolyte Fluid Sips", "desc": "Take small, frequent sips of coconut water or ORS to prevent dehydration." },
+      { "title": "Bland Diet Recovery", "desc": "Eat light, non-spicy foods like rice and curd." }
+    ]
+  },
+  {
+    "id": "DIS_005",
+    "disease_name": "Bronchial Hypersensitivity / Asthma Flare",
+    "category": "Pulmonary / Respiratory",
+    "symptoms": ["shortness of breath", "wheezing", "chest tightness", "cough", "dust allergy", "breathlessness"],
+    "symptom_weights": { "shortness of breath": 0.95, "wheezing": 0.9, "chest tightness": 0.9, "breathlessness": 0.95 },
+    "base_risk_level": "High Risk",
+    "target_age_group": "All Ages",
+    "precautions": ["Use prescribed rescue inhaler", "Sit upright", "Avoid dust/smoke"],
+    "recommendations": [
+      { "title": "Administer Rescue Inhaler", "desc": "Use your prescribed bronchodilator (Salbutamol) immediately." },
+      { "title": "Emergency Care Trigger", "desc": "Seek urgent clinic care if chest tightness or breathlessness persists." }
+    ]
+  },
+  {
+    "id": "DIS_006",
+    "disease_name": "Hypertensive Crisis / Cardiovascular Strain",
+    "category": "Cardiovascular",
+    "symptoms": ["chest pain", "chest tightness", "palpitations", "shortness of breath", "hypertension", "headache", "dizziness"],
+    "symptom_weights": { "chest pain": 0.98, "chest tightness": 0.95, "palpitations": 0.85, "hypertension": 0.9 },
+    "base_risk_level": "High Risk",
+    "target_age_group": "Adults (35+)",
+    "precautions": ["Stop physical activity", "Measure BP", "Contact ER immediately"],
+    "recommendations": [
+      { "title": "Immediate Physical Rest", "desc": "Stop physical activity immediately and lie in a calm position." },
+      { "title": "Emergency Hospital Visit", "desc": "Go to the nearest hospital emergency room for evaluation." }
+    ]
+  }
+]

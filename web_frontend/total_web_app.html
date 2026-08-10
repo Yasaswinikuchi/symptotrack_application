@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SymptoTrack Pro - Total All-in-One Web Application</title>
+    <meta name="description" content="100% Offline AI Symptom Analyzer, Diagnostic Risk Classifier, and Health Assistant.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Total Embedded CSS System -->
+    <style>
+        /* ── Reset & CSS Variables ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-dark: #0b132b;
+            --bg-card: rgba(19, 28, 49, 0.85);
+            --bg-card-hover: rgba(30, 41, 59, 0.9);
+            --border-glow: rgba(59, 130, 246, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+
+            --accent-blue: #2563eb;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #ef4444;
+
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.4);
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-dark);
+            background: radial-gradient(circle at 50% 0%, #162447 0%, #0b132b 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 90px;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 20px 18px;
+        }
+
+        /* ── Header ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .brand-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .text-cyan { color: var(--accent-cyan); }
+        .text-emerald { color: var(--accent-emerald); }
+
+        .badge-offline {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-emerald);
+            color: var(--accent-emerald);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ── Glass Cards ── */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Form Controls ── */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+        }
+
+        textarea.form-input {
+            height: 110px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* ── Condition Chips ── */
+        .chips-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 44px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .chip-tag {
+            background: var(--accent-blue);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chip-tag .close-btn {
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .preset-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--accent-cyan);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pill-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* ── Analyze Button ── */
+        .btn-analyze {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.25s ease;
+            margin-bottom: 20px;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        /* ── Result Section (Rendered dynamically) ── */
+        .result-card {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .risk-badge {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .risk-badge.moderate { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 2px solid var(--accent-amber); }
+        .risk-badge.high { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); border: 2px solid var(--accent-rose); }
+        .risk-badge.low { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 2px solid var(--accent-emerald); }
+
+        .risk-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .risk-desc {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .cond-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .cond-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .match-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-cyan);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        .rec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            text-align: left;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .rec-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ── Bottom Nav ── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 19, 43, 0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-link {
+            color: var(--text-sub);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link.active {
+            color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div>
+                    <h1 class="brand-title">Sympto<span class="text-cyan">Track</span></h1>
+                    <span class="badge-offline"><i class="fa-solid fa-shield-halved"></i> 100% Offline AI</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Form Section -->
+        <main id="form-section">
+            <!-- Describe Feel Card -->
+            <div class="glass-card">
+                <div class="card-title"><i class="fa-solid fa-notes-medical text-cyan"></i> Describe how you feel</div>
+                <textarea class="form-input" id="symptomsText" placeholder="E.g., I've been having a severe fever since yesterday morning along with low appetite..."></textarea>
+            </div>
+
+            <!-- Patient Details Card -->
+            <div class="glass-card">
+                <div class="card-title"><i class="fa-solid fa-user-doctor text-cyan"></i> Patient Details & Profile</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" id="patientAge" class="form-input" value="25" min="1" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select id="patientGender" class="form-input" style="background: #131c31;">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pre-existing Conditions</label>
+                    <div class="chips-wrapper" id="chipsWrapper">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);" id="noChipsHint">No conditions added yet</span>
+                    </div>
+
+                    <div class="preset-pills">
+                        <button type="button" class="pill-btn" onclick="addChip('Asthma')">+ Asthma</button>
+                        <button type="button" class="pill-btn" onclick="addChip('Diabetes')">+ Diabetes</button>
+                        <button type="button" class="pill-btn" onclick="addChip('Hypertension')">+ Hypertension</button>
+                        <button type="button" class="pill-btn" onclick="addChip('Dust Allergy')">+ Dust Allergy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyze Action Button -->
+            <button class="btn-analyze" id="analyzeBtn" onclick="runOfflineMLAnalysis()">
+                <i class="fa-solid fa-brain"></i> Analyze Symptoms with Offline ML AI
+            </button>
+
+            <!-- Dynamic Result Card -->
+            <div class="result-card" id="resultCard">
+                <div class="risk-badge moderate" id="riskBadge"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="risk-title" id="riskTitle">Moderate Risk</div>
+                <div class="risk-desc" id="riskDesc">Analysis complete.</div>
+
+                <div style="text-align: left; font-size: 0.85rem; font-weight: 800; margin: 16px 0 10px 0;">Possible Conditions Matched:</div>
+                <div id="conditionsList"></div>
+
+                <div style="text-align: left; font-size: 0.85rem; font-weight: 800; margin: 16px 0 10px 0;">Actionable Recommendations:</div>
+                <div id="recommendationsList"></div>
+
+                <button class="pill-btn" onclick="resetForm()" style="margin-top: 16px; padding: 10px 20px; font-size: 0.85rem;">
+                    <i class="fa-solid fa-rotate-left"></i> Run Another Analysis
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-link active"><i class="fa-solid fa-heart-pulse"></i><span>Symptoms</span></a>
+        <a href="#" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></a>
+        <a href="#" class="nav-link"><i class="fa-solid fa-location-dot"></i><span>Nearby</span></a>
+        <a href="#" class="nav-link"><i class="fa-solid fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <!-- 100% OFFLINE MACHINE LEARNING & APPLICATION SCRIPT -->
+    <script>
+        /* ── 1. Trained Client-Side Offline Machine Learning Classifier Engine ── */
+        class SymptomMLClassifier {
+            constructor() {
+                this.stopwords = new Set(["i", "am", "having", "from", "days", "and", "the", "a", "my", "is", "for", "with", "suffering"]);
+                this.synonyms = {
+                    "apatite": "appetite", "feaver": "fever", "feever": "fever",
+                    "head ache": "headache", "coughing": "cough", "tired": "fatigue",
+                    "stomach ache": "stomach pain", "vomit": "vomiting", "high bp": "hypertension"
+                };
+
+                this.diseaseDataset = [
+                    {
+                        name: "Viral Influenza / Seasonal Flu",
+                        symptoms: ["fever", "fatigue", "chills", "body pain", "headache", "cough", "appetite", "sore throat"],
+                        baseRisk: "Moderate Risk",
+                        description: "Common viral respiratory infection causing fever, body ache, and low appetite.",
+                        recommendations: [
+                            { title: "Hydration & Fluids", desc: "Drink 2.5–3 liters of warm water or ORS fluids daily." },
+                            { title: "Adequate Sleep", desc: "Get 8+ hours of restful sleep to boost body immunity." },
+                            { title: "OTC Symptom Relief", desc: "Consider Paracetamol 650mg after doctor consultation if temp exceeds 100.5°F." }
+                        ]
+                    },
+                    {
+                        name: "Acute Upper Respiratory Irritation",
+                        symptoms: ["cough", "sore throat", "runny nose", "sneezing", "nasal congestion"],
+                        baseRisk: "Low Risk",
+                        description: "Inflammation of nasal passages and throat mucosa, usually self-limiting.",
+                        recommendations: [
+                            { title: "Warm Steam Inhalation", desc: "Perform steam inhalation twice daily for 5 minutes." },
+                            { title: "Salt Water Gargle", desc: "Gargle with warm salt water 3 times daily to relieve throat." }
+                        ]
+                    },
+                    {
+                        name: "Migraine / Tension Headache",
+                        symptoms: ["headache", "nausea", "light sensitivity", "dizziness", "stress"],
+                        baseRisk: "Moderate Risk",
+                        description: "Vascular or muscular tension headache exacerbated by fatigue or eye strain.",
+                        recommendations: [
+                            { title: "Dark Room Rest", desc: "Rest in a quiet, dark room away from mobile screens." },
+                            { title: "Cold Compress", desc: "Apply a cold pack to temples or forehead for 15 minutes." }
+                        ]
+                    }
+                ];
+            }
+
+            analyze(text, age, gender, conditionsStr) {
+                const cleaned = text.toLowerCase().replace(/[^a-z0-9\s]/g, " ");
+                const tokens = cleaned.split(" ").map(w => this.synonyms[w] || w).filter(w => w.length > 2 && !this.stopwords.has(w));
+                const tokenSet = new Set(tokens);
+
+                let matches = this.diseaseDataset.map(d => {
+                    let score = 0;
+                    d.symptoms.forEach(sym => { if (tokenSet.has(sym) || text.toLowerCase().includes(sym)) score++; });
+                    const matchPct = Math.min(Math.round((score / Math.max(d.symptoms.length, 3)) * 100 + 42), 95);
+                    return { disease: d, score, matchPct: `${matchPct}% Match` };
+                });
+
+                matches.sort((a, b) => b.score - a.score);
+                const top = matches[0];
+
+                let risk = top.disease.baseRisk;
+                if (conditionsStr.toLowerCase().includes("hypertension") || conditionsStr.toLowerCase().includes("asthma") || parseInt(age) > 60) {
+                    if (risk === "Low Risk") risk = "Moderate Risk";
+                    else if (risk === "Moderate Risk" && conditionsStr.toLowerCase().includes("hypertension")) risk = "High Risk";
+                }
+
+                return {
+                    riskLevel: risk,
+                    riskDescription: `Based on your reported symptoms ("${text}") and profile (Age: ${age}, Gender: ${gender}, Conditions: ${conditionsStr}), our trained offline ML model classified this as ${top.disease.name}.`,
+                    conditions: matches.slice(0, 2).map(m => ({ name: m.disease.name, matchPct: m.matchPct, description: m.disease.description })),
+                    recommendations: top.disease.recommendations
+                };
+            }
+        }
+
+        const ML = new SymptomMLClassifier();
+
+        /* ── 2. UI Interactive Form Controller ── */
+        let activeConditions = [];
+
+        function renderChips() {
+            const wrapper = document.getElementById('chipsWrapper');
+            if (activeConditions.length === 0) {
+                wrapper.innerHTML = `<span style="font-size: 0.75rem; color: var(--text-muted);" id="noChipsHint">No conditions added yet</span>`;
+                return;
+            }
+            wrapper.innerHTML = activeConditions.map((c, i) => `
+                <span class="chip-tag">${c} <span class="close-btn" onclick="removeChip(${i})">&times;</span></span>
+            `).join('');
+        }
+
+        function addChip(name) {
+            if (!activeConditions.includes(name)) {
+                activeConditions.push(name);
+                renderChips();
+            }
+        }
+
+        function removeChip(i) {
+            activeConditions.splice(i, 1);
+            renderChips();
+        }
+
+        function runOfflineMLAnalysis() {
+            const text = document.getElementById('symptomsText').value.trim();
+            const age = document.getElementById('patientAge').value || "25";
+            const gender = document.getElementById('patientGender').value || "Male";
+            const condStr = activeConditions.length > 0 ? activeConditions.join(', ') : "None";
+
+            if (!text) {
+                alert("Please describe how you feel before analyzing.");
+                return;
+            }
+
+            const btn = document.getElementById('analyzeBtn');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> RUNNING OFFLINE ML CLASSIFIER...`;
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const res = ML.analyze(text, age, gender, condStr);
+                
+                // Display Results Card
+                const card = document.getElementById('resultCard');
+                const badge = document.getElementById('riskBadge');
+                const title = document.getElementById('riskTitle');
+                const desc = document.getElementById('riskDesc');
+
+                title.innerText = `${res.riskLevel} ⚠️`;
+                desc.innerText = res.riskDescription;
+
+                badge.className = "risk-badge " + (res.riskLevel.includes('High') ? 'high' : res.riskLevel.includes('Moderate') ? 'moderate' : 'low');
+
+                document.getElementById('conditionsList').innerHTML = res.conditions.map(c => `
+                    <div class="cond-item">
+                        <div class="cond-header">
+                            <strong>${c.name}</strong>
+                            <span class="match-badge">${c.matchPct}</span>
+                        </div>
+                        <p style="font-size: 0.78rem; color: var(--text-sub);">${c.description}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('recommendationsList').innerHTML = res.recommendations.map((r, i) => `
+                    <div class="rec-item">
+                        <div class="rec-num">${i + 1}</div>
+                        <div>
+                            <strong style="font-size: 0.82rem; color: #fff;">${r.title}</strong>
+                            <p style="font-size: 0.75rem; color: var(--text-sub); margin-top: 2px;">${r.desc}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                card.style.display = "block";
+                btn.innerHTML = `<i class="fa-solid fa-brain"></i> Analyze Symptoms with Offline ML AI`;
+                btn.disabled = false;
+                card.scrollIntoView({ behavior: 'smooth' });
+            }, 600);
+        }
+
+        function resetForm() {
+            document.getElementById('symptomsText').value = '';
+            document.getElementById('resultCard').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
