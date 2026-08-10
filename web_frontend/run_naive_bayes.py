@@ -1,6 +1,6 @@
 """
-SymptoTrack Pro - Pure Dynamic Naive Bayes Medical Classifier Engine (Python)
-NO hardcoded inputs. Dynamically receives live inputs from webpage JSON / API calls.
+SymptoTrack Pro - Interactive Runtime Input Naive Bayes Classifier Engine (Python)
+Prompts the user live in the terminal for symptoms, age, gender, and conditions!
 """
 
 import sys
@@ -85,7 +85,6 @@ class NaiveBayesMedicalClassifier:
         results.sort(key=lambda x: (x["matches"], x["score"]), reverse=True)
         top = results[0]
         
-        # CDSS Risk Calculation
         risk = "Moderate Risk"
         cond_str = str(pre_existing).lower()
         if "hypertension" in cond_str or "asthma" in cond_str or "diabetes" in cond_str or "cancer" in cond_str or int(patient_age) > 60:
@@ -103,29 +102,39 @@ class NaiveBayesMedicalClassifier:
 if __name__ == "__main__":
     classifier = NaiveBayesMedicalClassifier()
     
-    # Read live inputs from live_webpage_inputs.json if available
-    live_file = "live_webpage_inputs.json"
-    if os.path.exists(live_file):
-        with open(live_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    print("=" * 70)
+    print("🧠 SymptoTrack Pro - Interactive Runtime Input Naive Bayes Engine")
+    print("=" * 70)
+    
+    # Prompt live inputs interactively at runtime
+    try:
+        user_symptoms = input("Enter symptoms (Describe how you feel): ").strip()
+        if not user_symptoms:
+            user_symptoms = "i am having fever from last 15 days and vomiting"
             
-        res = classifier.predict(
-            symptom_text=data.get("symptomsText", ""),
-            patient_age=data.get("patientAge", 25),
-            patient_gender=data.get("patientGender", "Female"),
-            pre_existing=data.get("preExistingConditions", "None")
-        )
+        user_age = input("Enter patient age (default 25): ").strip()
+        user_age = int(user_age) if user_age.isdigit() else 25
         
-        print("=" * 70)
-        print("📥 DYNAMIC WEBPAGE SYMPTOM INPUT PROCESSED:")
-        print(f"  • Textarea Input         : '{data.get('symptomsText', '')}'")
-        print(f"  • Patient Age            : {data.get('patientAge', 25)}")
-        print(f"  • Patient Gender         : {data.get('patientGender', 'Female')}")
-        print(f"  • Pre-existing Conditions: {data.get('preExistingConditions', 'None')}")
+        user_gender = input("Enter patient gender (Female/Male): ").strip()
+        if not user_gender:
+            user_gender = "Female"
+            
+        user_conditions = input("Enter pre-existing conditions (e.g. Asthma, Diabetes): ").strip()
+        if not user_conditions:
+            user_conditions = "None"
+            
+        res = classifier.predict(user_symptoms, user_age, user_gender, user_conditions)
+        
+        print("\n" + "=" * 70)
+        print("📥 RUNTIME INPUT PROCESSED:")
+        print(f"  • Textarea Input         : '{user_symptoms}'")
+        print(f"  • Patient Age            : {user_age}")
+        print(f"  • Patient Gender         : {user_gender}")
+        print(f"  • Pre-existing Conditions: {user_conditions}")
         print("-" * 55)
         print(f"🎯 Predicted Diagnosis : {res['top_diagnosis']}")
         print(f"📊 Confidence Match   : {res['confidence_score']}")
         print(f"⚠️ Stratified Risk     : {res['risk_level']}")
         print("=" * 70)
-    else:
-        print("Ready. Waiting for live webpage submissions...")
+    except KeyboardInterrupt:
+        print("\nSession exited.")
